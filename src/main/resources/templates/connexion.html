@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion — Gestion RH</title>
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/talently.css}">
+</head>
+<body>
+
+<main class="login-page">
+    <div class="login-panel">
+        <div class="login-brand">
+            <div class="logo-mark"></div>
+            <span class="logo-text">talent<span class="logo-accent">ly</span></span>
+        </div>
+
+        <p class="login-eyebrow">Bienvenue</p>
+        <h1 class="login-title">Connectez-vous à votre espace</h1>
+        <p class="login-subtitle">Ravi de vous retrouver. Accédez à vos recrutements et vos équipes.</p>
+
+        <!-- Message d'erreur -->
+        <div th:if="${connexionError != null}" class="alert alert-error" role="alert">
+            <span th:text="${connexionError}"></span>
+        </div>
+
+        <form th:action="@{/connexion}" th:object="${connexionRequest}" method="post" class="login-form">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+            <div class="field-group">
+                <label class="field-label" for="email">Adresse email</label>
+                <input type="email" id="email" th:field="*{email}" class="login-field"
+                       placeholder="vous@entreprise.com" required autofocus>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label" for="motDePasse">Mot de passe</label>
+                <input type="password" id="motDePasse" th:field="*{motDePasse}" class="login-field"
+                       placeholder="••••••••" required>
+            </div>
+
+            <div class="login-footer-actions">
+                <label class="remember-me">
+                    <input type="checkbox" checked> Se souvenir de moi
+                </label>
+                <a href="#" class="forgot-link">Mot de passe oublié ?</a>
+            </div>
+
+            <button type="submit" class="login-button">Se connecter</button>
+        </form>
+
+        <div class="login-divider">
+            <span>— ou accès rapide —</span>
+        </div>
+
+        <div class="login-demo-buttons">
+            <button type="button" class="demo-button" onclick="fillDemo('RH')">Entrer comme RH</button>
+            <button type="button" class="demo-button" onclick="fillDemo('DG')">Entrer comme DG</button>
+        </div>
+
+        <p class="login-register">
+            Pas encore de compte ? <a href="#" class="register-link">Créer un compte</a>
+        </p>
+    </div>
+</main>
+
+<script>
+    function fillDemo(role) {
+        const email = role === 'RH' ? 'hery.rabe@entreprise.test' : 'miora.rakoto@entreprise.test';
+        const password = role === 'RH' ? 'rh123' : 'admin123';
+        document.getElementById('email').value = email;
+        document.getElementById('motDePasse').value = password;
+    }
+</script>
+</body>
+</html>
