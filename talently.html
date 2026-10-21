@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Talently — Gestion des ressources humaines</title>
+<meta name="description" content="Plateforme de gestion des recrutements, offres et candidatures.">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root { --font-sans: Arial, Helvetica, sans-serif; }
+* { box-sizing: border-box; }
+html { background: #f7f8fc; }
+body { margin: 0; min-height: 100vh; font-family: var(--font-sans); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.field { display:block; width:100%; border:1px solid #e2e8f0; border-radius:.7rem; background:#fff; padding:.7rem .8rem; color:#334155; font-size:.75rem; line-height:1.25rem; outline:none; transition:border-color 160ms ease, box-shadow 160ms ease; }
+.field::placeholder { color:#94a3b8; }
+.field:focus { border-color:#818cf8; box-shadow:0 0 0 3px rgba(99,102,241,.11); }
+.label { display:block; margin-bottom:.375rem; color:#475569; font-size:.72rem; font-weight:700; }
+.primary-button { display:inline-flex; align-items:center; gap:.45rem; border:0; border-radius:.72rem; background:#4f46e5; padding:.7rem .95rem; color:#fff; font-size:.72rem; font-weight:700; line-height:1rem; box-shadow:0 8px 20px rgba(79,70,229,.15); transition:background 160ms ease, transform 160ms ease; }
+.primary-button:hover { background:#4338ca; }
+.primary-button:active { transform:translateY(1px); }
+.primary-button:disabled { cursor:wait; opacity:.7; }
+.secondary-button { display:inline-flex; align-items:center; gap:.4rem; border:1px solid #e2e8f0; border-radius:.72rem; background:#fff; padding:.66rem .85rem; color:#475569; font-size:.72rem; font-weight:700; line-height:1rem; transition:border-color 160ms, color 160ms, background 160ms; }
+.secondary-button:hover { border-color:#c7d2fe; background:#f8f8ff; color:#4f46e5; }
+.card { border:1px solid #f1f5f9; background:#fff; border-radius:1rem; box-shadow:0 8px 24px rgba(15,23,42,.035); }
+::selection { background:#dddafe; color:#312e81; }
+</style>
+</head>
+<body class="text-slate-900">
+
+<!-- ============ CONNEXION ============ -->
+<main id="login" class="grid min-h-screen overflow-hidden bg-[#f8f8ff] lg:grid-cols-[1.1fr_0.9fr]">
+  <div class="relative hidden overflow-hidden bg-[#171c49] p-12 lg:flex lg:flex-col">
+    <div class="absolute inset-0 opacity-80" style="background-image:radial-gradient(circle at 25% 15%,rgba(113,99,255,.58),transparent 28%),radial-gradient(circle at 82% 78%,rgba(41,197,189,.25),transparent 24%),linear-gradient(135deg,#151b48,#20286b)"></div>
+    <div class="relative" data-logo="light"></div>
+    <div class="relative my-auto max-w-lg">
+      <span class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[.12em] text-indigo-100"><span class="h-1.5 w-1.5 rounded-full bg-[#8ff2c1]"></span>Human capital, simplified</span>
+      <h1 class="text-[46px] font-bold leading-[1.08] tracking-[-.055em] text-white">Le recrutement,<br><span class="text-[#aaa6ff]">pensé pour avancer.</span></h1>
+      <p class="mt-6 max-w-md text-[15px] leading-7 text-indigo-100/80">Un espace clair pour fluidifier vos validations, révéler les talents et construire vos équipes avec intention.</p>
+    </div>
+    <div class="relative flex gap-3">
+      <div class="rounded-2xl border border-white/10 bg-white/[.08] px-4 py-3"><p class="text-xl font-bold text-white">+38%</p><p class="text-[10px] text-indigo-100/65">processus plus rapides</p></div>
+      <div class="rounded-2xl border border-white/10 bg-white/[.08] px-4 py-3"><p class="text-xl font-bold text-white">4.9/5</p><p class="text-[10px] text-indigo-100/65">satisfaction équipes</p></div>
+    </div>
+  </div>
+  <div class="flex min-h-screen items-center justify-center p-6 sm:p-12">
+    <section class="w-full max-w-[390px]">
+      <div class="mb-10 lg:hidden" data-logo></div>
+      <p class="text-[12px] font-bold uppercase tracking-[.14em] text-[#5b55ed]">Bienvenue</p>
+      <h2 class="mt-3 text-[32px] font-bold tracking-[-.05em] text-slate-900">Connectez-vous à votre espace</h2>
+      <p class="mt-3 text-[14px] leading-6 text-slate-500">Ravi de vous retrouver. Accédez à vos recrutements et vos équipes.</p>
+      <form class="mt-8 space-y-4" onsubmit="event.preventDefault(); connect(document.getElementById('email').value.includes('dg') ? 'Direction générale' : 'RH')">
+        <label class="block"><span class="mb-1.5 block text-[12px] font-semibold text-slate-700">Adresse email</span><input id="email" type="email" value="aicha.martin@talently.fr" class="field" placeholder="vous@entreprise.com"></label>
+        <label class="block"><span class="mb-1.5 block text-[12px] font-semibold text-slate-700">Mot de passe</span>
+          <div class="relative"><input id="pwd" type="password" value="demo2024" class="field pr-12"><button type="button" onclick="const p=document.getElementById('pwd');const s=p.type==='password';p.type=s?'text':'password';this.textContent=s?'Masquer':'Afficher'" class="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-[#5b55ed]">Afficher</button></div></label>
+        <div class="flex items-center justify-between"><label class="flex items-center gap-2 text-[12px] text-slate-500"><input type="checkbox" checked class="accent-[#5b55ed]">Se souvenir de moi</label><button type="button" class="text-[12px] font-semibold text-[#5b55ed]">Mot de passe oublié ?</button></div>
+        <button class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#4f46e5] px-4 py-3.5 text-[13px] font-bold text-white shadow-[0_10px_24px_rgba(79,70,229,.25)] transition hover:bg-[#4338ca]">Se connecter <span data-icon="arrow" data-size="16"></span></button>
+      </form>
+      <div class="mt-7 border-t border-slate-200 pt-6">
+        <p class="text-center text-[11px] font-medium text-slate-400">Accès de démonstration</p>
+        <div class="mt-3 grid grid-cols-2 gap-2">
+          <button onclick="connect('RH')" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-bold text-slate-600 hover:border-indigo-200 hover:text-indigo-600">Entrer comme RH</button>
+          <button onclick="connect('Direction générale')" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-bold text-slate-600 hover:border-indigo-200 hover:text-indigo-600">Entrer comme DG</button>
+        </div>
+        <button onclick="connect('Candidat')" class="mt-2 w-full text-center text-[11px] font-semibold text-[#5b55ed] hover:underline">Voir le portail candidats →</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ============ APPLICATION ============ -->
+<div id="app" class="hidden min-h-screen bg-[#f7f8fc]">
+  <aside class="fixed inset-y-0 left-0 z-30 hidden w-[244px] flex-col border-r border-slate-200/70 bg-white px-4 py-5 lg:flex">
+    <div class="px-3" data-logo></div>
+    <div class="mt-10 px-3"><p id="space" class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400"></p></div>
+    <nav id="nav" class="mt-3 space-y-1"></nav>
+    <div class="mt-auto space-y-3">
+      <button onclick="go('candidate-portal')" class="flex w-full items-center gap-2 rounded-xl border border-indigo-100 bg-indigo-50/50 p-3 text-left text-[12px] font-medium text-indigo-700 transition hover:bg-indigo-50"><span class="grid h-7 w-7 place-items-center rounded-lg bg-white text-indigo-600 shadow-sm" data-icon="sparkle" data-size="15"></span><span>Voir le portail<br><span class="font-normal text-indigo-500">candidats public</span></span><span data-icon="arrow" data-size="15"></span></button>
+      <div class="border-t border-slate-100 pt-4"><div class="flex items-center gap-2.5 px-2"><span data-avatar="Aïcha Martin"></span><div class="min-w-0 flex-1"><p class="truncate text-[12px] font-bold text-slate-800">Aïcha Martin</p><p id="roleLabel" class="text-[10px] text-slate-400"></p></div><button onclick="logout()" class="text-slate-400 hover:text-rose-500" title="Se déconnecter" data-icon="logout" data-size="17"></button></div></div>
+    </div>
+  </aside>
+
+  <main class="lg:pl-[244px]">
+    <header class="sticky top-0 z-20 flex h-[72px] items-center gap-4 border-b border-slate-200/70 bg-white/85 px-5 backdrop-blur lg:px-9">
+      <div class="lg:hidden" data-logo></div>
+      <div class="hidden items-center gap-2 text-[12px] text-slate-400 sm:flex"><span>Talent Management</span><span data-icon="chevron" data-size="14"></span><span id="crumb" class="font-semibold text-slate-700"></span></div>
+      <div class="ml-auto hidden w-full max-w-[280px] items-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 sm:flex"><span data-icon="search" data-size="16"></span><input id="q" oninput="state.query=this.value; if(state.page==='requests') render()" placeholder="Rechercher..." class="ml-2 w-full bg-transparent text-[12px] outline-none placeholder:text-slate-400"></div>
+      <button onclick="go('candidate-portal')" class="hidden rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 lg:block">Portail candidats</button>
+      <button class="relative grid h-9 w-9 place-items-center rounded-xl text-slate-500 hover:bg-slate-100"><span data-icon="bell" data-size="19"></span><span class="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-rose-500 ring-2 ring-white"></span></button>
+      <div class="hidden h-8 w-px bg-slate-200 sm:block"></div>
+      <div class="hidden text-right sm:block"><p id="topName" class="text-[11px] font-bold text-slate-700"></p><p id="topRole" class="text-[10px] text-slate-400"></p></div>
+      <span id="topAvatar"></span>
+    </header>
+    <div id="view" class="mx-auto max-w-[1440px] px-5 py-6 sm:px-8 lg:px-9"></div>
+  </main>
+</div>
+
+<div id="modal"></div>
+<div id="toast" class="fixed bottom-6 right-6 z-[80] hidden items-center gap-3 rounded-2xl border border-emerald-100 bg-white px-4 py-3 shadow-[0_16px_40px_rgba(15,23,42,0.15)]"><span class="grid h-8 w-8 place-items-center rounded-full bg-emerald-50 text-emerald-600" data-icon="check" data-size="16"></span><p id="toastText" class="text-[12px] font-semibold text-slate-700"></p></div>
+
+<script>
+/* ---------- Données ---------- */
+const state = {
+  role: 'RH', page: 'dashboard', filter: 'all', query: '',
+  requests: [
+    { id:'seed-1', reference:'REC-2024-041', title:'Product Designer Senior', department:'Produit & Design', manager:'Sofia Benali', employmentType:'CDI · Temps plein', location:'Paris / Hybride', budget:68000, justification:'Renforcer l’équipe produit pour accompagner les lancements du second semestre.', status:'pending_dg', createdAt:'2024-05-28T09:00:00Z' },
+    { id:'seed-2', reference:'REC-2024-040', title:'Responsable Comptable', department:'Finance', manager:'Marc Dubois', employmentType:'CDI · Temps plein', location:'Lyon', budget:55000, justification:'Remplacement à la suite d’une mobilité interne.', status:'pending_hr', createdAt:'2024-05-27T10:30:00Z' },
+    { id:'seed-3', reference:'REC-2024-039', title:'Ingénieur Data', department:'Data & Tech', manager:'Thomas Leroy', employmentType:'CDI · Temps plein', location:'Paris / Hybride', budget:62000, justification:'Structurer les nouveaux flux de données clients.', status:'approved', createdAt:'2024-05-23T08:15:00Z' },
+    { id:'seed-4', reference:'REC-2024-038', title:'Account Executive', department:'Sales', manager:'Mehdi Rahal', employmentType:'CDI · Temps plein', location:'Bordeaux', budget:49000, justification:'Ouverture d’un nouveau portefeuille Grand Ouest.', status:'rejected', createdAt:'2024-05-20T14:00:00Z' }
+  ],
+  jobs: [
+    { id:'j1', title:'Ingénieur Data', department:'Data & Tech', location:'Paris · Hybride', contractType:'CDI', description:'Concevez les produits data qui permettent à nos équipes de prendre des décisions plus éclairées.', status:'published', publishedAt:'2024-05-24T08:00:00Z' },
+    { id:'j2', title:'Customer Success Manager', department:'Expérience client', location:'Lyon · Hybride', contractType:'CDI', description:'Accompagnez nos clients stratégiques et faites grandir une expérience exceptionnelle.', status:'published', publishedAt:'2024-05-21T08:00:00Z' },
+    { id:'j3', title:'Product Designer Senior', department:'Produit & Design', location:'Paris · Hybride', contractType:'CDI', description:'Donnez forme à des expériences utiles, élégantes et accessibles à grande échelle.', status:'draft', publishedAt:'2024-05-28T08:00:00Z' }
+  ]
+};
+const statusMeta = {
+  draft:{label:'Brouillon',cls:'bg-slate-100 text-slate-600 ring-slate-200'},
+  pending_hr:{label:'À valider RH',cls:'bg-amber-50 text-amber-700 ring-amber-200'},
+  pending_dg:{label:'À valider DG',cls:'bg-violet-50 text-violet-700 ring-violet-200'},
+  approved:{label:'Validée',cls:'bg-emerald-50 text-emerald-700 ring-emerald-200'},
+  rejected:{label:'Refusée',cls:'bg-rose-50 text-rose-700 ring-rose-200'}
+};
+const titles = {dashboard:'Vue d’ensemble',requests:'Demandes de recrutement','new-request':'Nouvelle demande',approvals:'Validations Direction Générale',jobs:'Offres d’emploi',candidates:'Candidats','candidate-portal':'Portail candidats'};
+
+/* ---------- Helpers UI ---------- */
+const ICONS = {
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  briefcase:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+  check:'<path d="m5 12 4 4L19 6"/>', plus:'<path d="M12 5v14M5 12h14"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>',
+  bell:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>',
+  chevron:'<path d="m9 18 6-6-6-6"/>', more:'<circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',
+  pin:'<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="2.5"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', trend:'<path d="m3 17 6-6 4 4 7-8"/><path d="M14 7h6v6"/>',
+  close:'<path d="m6 6 12 12M18 6 6 18"/>', logout:'<path d="M10 17l5-5-5-5M15 12H3"/><path d="M21 19V5a2 2 0 0 0-2-2h-6"/>',
+  filter:'<path d="M4 5h16M7 12h10M10 19h4"/>', sparkle:'<path d="m12 3-1.3 5.7L5 10l5.7 1.3L12 17l1.3-5.7L19 10l-5.7-1.3L12 3Z"/>',
+  send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>'
+};
+const icon = (n, s = 20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+const logo = (light) => `<div class="flex items-center gap-2.5"><span class="grid h-8 w-8 place-items-center rounded-[10px] ${light?'bg-white/15 text-white':'bg-[#4f46e5] text-white'}"><span class="relative block h-3.5 w-3.5"><i class="absolute bottom-0 left-0 h-2 w-2 rounded-sm bg-current"></i><i class="absolute right-0 top-0 h-2.5 w-2.5 rounded-sm bg-current opacity-55"></i></span></span><span class="text-[18px] font-bold tracking-[-0.04em] ${light?'text-white':'text-slate-900'}">talent<span class="${light?'text-[#b9b5ff]':'text-[#5b55ed]'}">ly</span></span></div>`;
+const avatar = (name, size = 'md') => {
+  const d = size==='lg'?'h-11 w-11 text-sm':size==='sm'?'h-7 w-7 text-[10px]':'h-8 w-8 text-[11px]';
+  const tones = ['bg-indigo-100 text-indigo-700','bg-amber-100 text-amber-700','bg-cyan-100 text-cyan-700','bg-rose-100 text-rose-700'];
+  return `<span class="grid shrink-0 place-items-center rounded-full font-bold ${d} ${tones[name.charCodeAt(0)%4]}">${name.split(' ').map(p=>p[0]).join('').slice(0,2)}</span>`;
+};
+const badge = (s) => `<span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset ${statusMeta[s].cls}"><span class="h-1.5 w-1.5 rounded-full bg-current"></span>${statusMeta[s].label}</span>`;
+const fmtDate = (d) => d ? new Intl.DateTimeFormat('fr-FR',{day:'numeric',month:'short',year:'numeric'}).format(new Date(d)) : 'Aujourd’hui';
+const heading = (eyebrow, title, text, action = '') => `<div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#5b55ed]">${eyebrow}</p><h1 class="mt-1 text-[29px] font-bold tracking-[-.05em] text-slate-900">${title}</h1><p class="mt-1 text-[13px] text-slate-500">${text}</p></div>${action}</div>`;
+const input = (id, label, ph = '', type = 'text', val = '') => `<label><span class="label">${label}</span><input id="${id}" type="${type}" value="${val}" class="field" placeholder="${ph}"></label>`;
+const select = (id, label, opts, val = '') => `<label><span class="label">${label}</span><select id="${id}" class="field">${opts.map(o=>`<option ${o===val?'selected':''}>${o}</option>`).join('')}</select></label>`;
+const metric = (label, value, trend, tone, ic) => { const t = {indigo:'bg-indigo-50 text-indigo-600',amber:'bg-amber-50 text-amber-600',emerald:'bg-emerald-50 text-emerald-600',rose:'bg-rose-50 text-rose-600'}[tone]; return `<div class="card p-5"><div class="flex items-start justify-between"><div><p class="text-[12px] font-medium text-slate-500">${label}</p><p class="mt-2 text-[28px] font-bold tracking-[-0.05em] text-slate-900">${value}</p></div><span class="grid h-9 w-9 place-items-center rounded-xl ${t}">${icon(ic,18)}</span></div><div class="mt-4 flex items-center gap-1.5 text-[11px]"><span class="inline-flex items-center gap-0.5 font-bold text-emerald-600">${icon('trend',13)}${trend}</span><span class="text-slate-400">vs. mois dernier</span></div></div>`; };
+const $ = (id) => document.getElementById(id);
+const val = (id) => $(id).value;
+
+function hydrate(root = document) {
+  root.querySelectorAll('[data-icon]').forEach(e => { e.innerHTML = icon(e.dataset.icon, +e.dataset.size || 20); e.removeAttribute('data-icon'); });
+  root.querySelectorAll('[data-logo]').forEach(e => { e.innerHTML = logo(e.dataset.logo === 'light'); e.removeAttribute('data-logo'); });
+  root.querySelectorAll('[data-avatar]').forEach(e => { e.outerHTML = avatar(e.dataset.avatar); });
+}
+function toast(text) { $('toastText').textContent = text; $('toast').classList.replace('hidden','flex'); clearTimeout(toast.t); toast.t = setTimeout(() => $('toast').classList.replace('flex','hidden'), 3600); }
+function openModal(html) { $('modal').innerHTML = html; hydrate($('modal')); }
+function closeModal() { $('modal').innerHTML = ''; }
+
+/* ---------- Navigation ---------- */
+function connect(role) { state.role = role; $('login').classList.add('hidden'); $('app').classList.remove('hidden'); go(role === 'Candidat' ? 'candidate-portal' : 'dashboard'); }
+function logout() { $('app').classList.add('hidden'); $('login').classList.remove('hidden'); }
+function go(page) { state.page = page; if (page === 'candidate-portal') state.role = 'Candidat'; render(); window.scrollTo(0,0); }
+function renderNav() {
+  const r = state.requests, dg = state.role === 'Direction générale';
+  const items = dg
+    ? [['Vue d’ensemble','grid','dashboard'],['À valider','check','approvals',r.filter(x=>x.status==='pending_dg').length],['Demandes','file','requests'],['Offres d’emploi','briefcase','jobs']]
+    : [['Vue d’ensemble','grid','dashboard'],['Demandes de recrutement','file','requests',r.filter(x=>x.status==='pending_hr').length],['Nouvelle demande','plus','new-request'],['Offres d’emploi','briefcase','jobs'],['Candidats','users','candidates']];
+  $('nav').innerHTML = items.map(([l,i,p,c]) => `<button onclick="go('${p}')" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium transition ${state.page===p?'bg-[#eeedff] text-[#4f46e5]':'text-slate-500 hover:bg-slate-50 hover:text-slate-800'}">${icon(i,18)}<span class="flex-1">${l}</span>${c?`<span class="grid h-5 min-w-5 place-items-center rounded-full bg-[#4f46e5] px-1 text-[10px] font-bold text-white">${c}</span>`:''}</button>`).join('');
+  const cand = state.role === 'Candidat';
+  $('space').textContent = 'Espace ' + (state.role === 'RH' ? 'Ressources Humaines' : 'Direction Générale');
+  $('roleLabel').textContent = state.role === 'RH' ? 'Responsable RH' : 'Direction générale';
+  $('crumb').textContent = titles[state.page];
+  $('topName').textContent = cand ? 'Espace candidat' : 'Aïcha Martin';
+  $('topRole').textContent = cand ? 'Bienvenue' : state.role;
+  $('topAvatar').innerHTML = avatar(cand ? 'Camille Bernard' : 'Aïcha Martin');
+}
+function render() {
+  renderNav();
+  const v = { dashboard, requests: requestList, 'new-request': newRequest, approvals, jobs, candidates, 'candidate-portal': portal }[state.page];
+  $('view').innerHTML = v();
+  hydrate($('view')); hydrate($('app'));
+}
+
+/* ---------- Vues ---------- */
+function dashboard() {
+  const dg = state.role === 'Direction générale';
+  const waiting = state.requests.filter(x => x.status === (dg ? 'pending_dg' : 'pending_hr')).length || 2;
+  const rows = state.requests.slice(0,4).map(r => `<tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/60"><td class="px-6 py-3.5"><p class="text-[12px] font-bold text-slate-700">${r.title}</p><p class="mt-0.5 text-[10px] text-slate-400">${r.reference}</p></td><td class="px-4 py-3.5 text-[11px] text-slate-500">${r.department}</td><td class="px-4 py-3.5"><div class="flex items-center gap-2">${avatar(r.manager,'sm')}<span class="text-[11px] font-medium text-slate-600">${r.manager}</span></div></td><td class="px-4 py-3.5">${badge(r.status)}</td><td class="px-4 py-3.5"><button onclick="openRequest('${r.id}')" class="text-slate-400 hover:text-[#5b55ed]">${icon('more',18)}</button></td></tr>`).join('');
+  return `<div class="space-y-6">
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p class="text-[12px] font-semibold text-[#5b55ed]">Mardi 28 mai 2024</p><h1 class="mt-1 text-[30px] font-bold tracking-[-.05em] text-slate-900">Bonjour, Aïcha 👋</h1><p class="mt-1 text-[13px] text-slate-500">Voici l’essentiel de votre activité recrutement aujourd’hui.</p></div>
+  <button onclick="go('${dg?'approvals':'new-request'}')" class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#4f46e5] px-4 py-3 text-[12px] font-bold text-white shadow-[0_10px_24px_rgba(79,70,229,.18)] hover:bg-[#4338ca]">${icon(dg?'check':'plus',16)}${dg?'Voir les validations':'Nouvelle demande'}</button></div>
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">${metric('Postes ouverts', state.jobs.filter(j=>j.status!=='draft').length+9,'12%','indigo','briefcase')}${metric('Demandes en cours', state.requests.filter(r=>!['approved','rejected'].includes(r.status)).length+5,'8%','amber','file')}${metric('Candidats à étudier','48','18%','emerald','users')}${metric('Délai moyen','12,4 j','6%','rose','clock')}</div>
+  <div class="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(300px,.8fr)]">
+    <section class="card"><div class="flex items-center justify-between px-6 pb-4 pt-5"><div><h2 class="text-[15px] font-bold tracking-[-.025em] text-slate-800">Demandes récentes</h2><p class="mt-0.5 text-[11px] text-slate-400">Suivez les recrutements en cours</p></div><button onclick="go('requests')" class="text-[11px] font-bold text-[#5b55ed]">Voir tout</button></div>
+    <div class="overflow-x-auto"><table class="w-full min-w-[580px] text-left"><thead><tr class="border-y border-slate-100 text-[10px] font-bold uppercase tracking-[.09em] text-slate-400"><th class="px-6 py-3">Poste</th><th class="px-4 py-3">Département</th><th class="px-4 py-3">Demandeur</th><th class="px-4 py-3">Statut</th><th></th></tr></thead><tbody>${rows}</tbody></table></div></section>
+    <section class="card p-5"><div class="flex items-start justify-between"><div><h2 class="text-[15px] font-bold tracking-[-.025em] text-slate-800">À votre attention</h2><p class="mt-0.5 text-[11px] text-slate-400">Actions prioritaires</p></div><span class="grid h-8 w-8 place-items-center rounded-lg bg-amber-50 text-amber-500">${icon('bell',16)}</span></div>
+    <div class="mt-5 space-y-3">
+      <button onclick="go('approvals')" class="w-full rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-left hover:bg-indigo-50"><div class="flex gap-3"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-[#5b55ed] shadow-sm">${icon('check',16)}</span><span><span class="block text-[11px] font-bold text-indigo-900">${waiting} demande${waiting>1?'s':''} à valider</span><span class="mt-0.5 block text-[10px] leading-4 text-indigo-600">Une décision est attendue avant vendredi.</span></span></div></button>
+      <div class="flex gap-3 rounded-xl border border-slate-100 p-3"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-600">${icon('users',16)}</span><span><span class="block text-[11px] font-bold text-slate-700">12 nouveaux profils</span><span class="mt-0.5 block text-[10px] text-slate-400">ont postulé cette semaine.</span></span></div>
+      <div class="flex gap-3 rounded-xl border border-slate-100 p-3"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-600">${icon('calendar',16)}</span><span><span class="block text-[11px] font-bold text-slate-700">3 entretiens à venir</span><span class="mt-0.5 block text-[10px] text-slate-400">Prochain entretien : aujourd’hui, 14:30.</span></span></div>
+    </div></section></div>
+  <section class="grid gap-5 lg:grid-cols-[1.1fr_.9fr]"><div class="card p-5"><h2 class="text-[15px] font-bold text-slate-800">Flux de candidatures</h2><p class="text-[11px] text-slate-400">Sur les 6 derniers mois</p>
+    <div class="mt-6 flex h-28 items-end justify-between gap-2">${[34,52,45,76,62,92,70,55,82,64,98,78].map((h,i)=>`<div class="group flex h-full flex-1 items-end"><div style="height:${h}%" class="w-full rounded-t-md ${i===11?'bg-[#5b55ed]':'bg-[#e5e4ff]'} transition group-hover:bg-[#7c76ff]"></div></div>`).join('')}</div>
+    <div class="mt-3 flex justify-between text-[9px] font-medium text-slate-400"><span>Jan.</span><span>Fév.</span><span>Mar.</span><span>Avr.</span><span>Mai</span><span>Juin</span></div></div>
+    <div class="rounded-2xl bg-[#22285e] p-5 text-white"><span class="grid h-8 w-8 place-items-center rounded-lg bg-white/10 text-[#aba7ff]">${icon('sparkle',16)}</span><h3 class="mt-5 text-[16px] font-bold tracking-[-.03em]">Besoin d’un regard expert ?</h3><p class="mt-2 text-[11px] leading-5 text-indigo-100/70">Notre assistant analyse vos données de recrutement et vous aide à prioriser les meilleures actions.</p><button class="mt-4 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#c4c2ff]">Découvrir les insights ${icon('arrow',14)}</button></div></section></div>`;
+}
+
+function requestList() {
+  const q = state.query.toLowerCase();
+  const base = state.requests.filter(r => `${r.title} ${r.department} ${r.reference}`.toLowerCase().includes(q));
+  const shown = state.filter === 'all' ? base : base.filter(r => r.status === state.filter);
+  const pill = (f, l) => `<button onclick="state.filter='${f}';render()" class="whitespace-nowrap rounded-lg px-3 py-2 text-[10px] font-bold transition ${state.filter===f?'bg-[#eeedff] text-[#4f46e5]':'text-slate-500 hover:bg-slate-50'}">${l}</button>`;
+  const rows = shown.map(r => `<tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/60"><td class="px-6 py-4"><p class="text-[12px] font-bold text-slate-700">${r.title}</p><p class="mt-0.5 text-[10px] text-slate-400">${r.reference} · ${r.employmentType}</p></td><td class="px-4 py-4 text-[11px] text-slate-600">${r.department}</td><td class="px-4 py-4"><div class="flex items-center gap-2">${avatar(r.manager,'sm')}<span class="text-[11px] font-medium text-slate-600">${r.manager}</span></div></td><td class="px-4 py-4 text-[11px] text-slate-500">${fmtDate(r.createdAt)}</td><td class="px-4 py-4">${badge(r.status)}</td><td class="px-4 py-4"><button onclick="openRequest('${r.id}')" class="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[10px] font-bold text-slate-600 hover:border-indigo-200 hover:text-indigo-600">Ouvrir</button></td></tr>`).join('');
+  return `<div>${heading('Recrutement','Demandes de recrutement','Centralisez et suivez toutes les demandes de vos équipes.',`<button onclick="go('new-request')" class="primary-button">${icon('plus',16)}Nouvelle demande</button>`)}
+  <div class="card mt-6"><div class="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"><div class="flex gap-1 overflow-x-auto">${pill('all',`Toutes (${base.length})`)}${pill('pending_hr','À valider RH')}${pill('pending_dg','À valider DG')}${pill('approved','Validées')}</div><button class="inline-flex items-center gap-2 text-[11px] font-bold text-slate-500">${icon('filter',15)}Plus de filtres</button></div>
+  <div class="overflow-x-auto"><table class="w-full min-w-[780px] text-left"><thead><tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-[.1em] text-slate-400"><th class="px-6 py-3">Demande</th><th class="px-4 py-3">Département</th><th class="px-4 py-3">Manager</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Statut</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+  ${shown.length?'':'<div class="px-6 py-14 text-center text-[12px] text-slate-400">Aucune demande ne correspond à votre recherche.</div>'}</div></div>`;
+}
+
+function newRequest() {
+  return `<div class="mx-auto max-w-4xl">${heading('Recrutement','Créer une demande','Présentez le besoin de votre département pour initier le circuit de validation.')}
+  <form onsubmit="event.preventDefault();submitRequest()" class="card mt-6 overflow-hidden"><div class="border-b border-slate-100 px-6 py-5"><h2 class="text-[14px] font-bold text-slate-800">Informations du poste</h2><p class="mt-1 text-[11px] text-slate-400">Les champs marqués d’un * sont obligatoires.</p></div>
+  <div class="grid gap-5 p-6 md:grid-cols-2">
+    ${input('r-title','Intitulé du poste *','ex. Brand Manager')}
+    ${select('r-dept','Département *',['Produit & Design','Finance','Data & Tech','Sales','Expérience client','Ressources humaines'])}
+    ${input('r-manager','Department manager *','Nom et prénom du manager')}
+    ${select('r-type','Type de contrat',['CDI · Temps plein','CDD','Stage','Alternance','Freelance'])}
+    ${select('r-loc','Localisation',['Paris / Hybride','Paris','Lyon','Bordeaux','À distance'])}
+    ${input('r-budget','Budget annuel (€)','ex. 55000','number')}
+    <label class="md:col-span-2"><span class="label">Justification du besoin *</span><textarea id="r-just" class="field min-h-[118px] resize-y" placeholder="Expliquez le contexte, les objectifs et l’impact attendu de ce recrutement..."></textarea></label></div>
+  <div class="flex items-center justify-between border-t border-slate-100 bg-slate-50/40 px-6 py-4"><p class="hidden text-[11px] text-slate-400 sm:block">La demande sera soumise à la validation RH.</p><div class="ml-auto flex gap-2"><button type="button" onclick="go('requests')" class="secondary-button">Annuler</button><button class="primary-button">${icon('send',15)}Envoyer la demande</button></div></div></form></div>`;
+}
+function submitRequest() {
+  if (!val('r-title') || !val('r-manager') || !val('r-just')) return;
+  state.requests.unshift({ id:'local-'+Date.now(), reference:'REC-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-5), title:val('r-title'), department:val('r-dept'), manager:val('r-manager'), employmentType:val('r-type'), location:val('r-loc'), budget:Number(val('r-budget'))||0, justification:val('r-just'), status:'pending_hr', createdAt:new Date().toISOString() });
+  go('requests'); toast('Demande envoyée à la validation RH.');
+}
+function setStatus(id, status) {
+  state.requests.find(r => r.id === id).status = status; closeModal(); render();
+  toast(status === 'approved' ? 'Demande validée et prête à être publiée.' : 'Statut de la demande mis à jour.');
+}
+
+function approvals() {
+  const list = state.requests.filter(r => r.status === 'pending_dg');
+  const cards = list.map(r => `<article class="card p-6"><div class="flex items-start justify-between gap-4"><div class="flex gap-3"><span class="grid h-10 w-10 place-items-center rounded-xl bg-violet-50 text-violet-600">${icon('briefcase',19)}</span><div><p class="text-[15px] font-bold text-slate-800">${r.title}</p><p class="mt-1 text-[11px] text-slate-400">${r.reference} · ${r.department}</p></div></div>${badge(r.status)}</div>
+  <div class="mt-5 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-3"><div><p class="text-[10px] font-bold uppercase tracking-[.08em] text-slate-400">Manager</p><div class="mt-1.5 flex items-center gap-2">${avatar(r.manager,'sm')}<span class="text-[11px] font-semibold text-slate-700">${r.manager}</span></div></div><div><p class="text-[10px] font-bold uppercase tracking-[.08em] text-slate-400">Budget annuel</p><p class="mt-2 text-[12px] font-bold text-slate-700">${r.budget.toLocaleString('fr-FR')} €</p></div></div>
+  <p class="mt-4 line-clamp-2 text-[12px] leading-5 text-slate-500">${r.justification}</p>
+  <div class="mt-5 flex items-center gap-2"><button onclick="setStatus('${r.id}','rejected')" class="secondary-button">Refuser</button><button onclick="openRequest('${r.id}')" class="secondary-button">Détails</button><button onclick="setStatus('${r.id}','approved')" class="primary-button ml-auto">${icon('check',15)}Valider</button></div></article>`).join('');
+  const empty = `<div class="col-span-full rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-20 text-center"><span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-emerald-50 text-emerald-600">${icon('check',22)}</span><p class="mt-4 text-[14px] font-bold text-slate-700">Tout est à jour</p><p class="mt-1 text-[12px] text-slate-400">Aucune demande ne nécessite la décision de la Direction Générale.</p></div>`;
+  return `<div>${heading('Direction Générale','Validations en attente','Décidez des ouvertures de poste proposées par les équipes et validées par les RH.',`<span class="rounded-lg bg-violet-50 px-3 py-2 text-[11px] font-bold text-violet-700">${list.length} décision${list.length>1?'s':''} attendue${list.length>1?'s':''}</span>`)}<div class="mt-6 grid gap-4 xl:grid-cols-2">${cards||empty}</div></div>`;
+}
+
+function jobs() {
+  const dg = state.role === 'Direction générale';
+  const cards = state.jobs.map(j => `<article class="card group flex min-h-[245px] flex-col p-5 transition hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(15,23,42,0.08)]"><div class="flex items-start justify-between"><span class="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-[#5b55ed]">${icon('briefcase',19)}</span><span class="rounded-full px-2.5 py-1 text-[10px] font-bold ${j.status==='draft'?'bg-slate-100 text-slate-500':'bg-emerald-50 text-emerald-700'}">${j.status==='draft'?'Brouillon':'Publiée'}</span></div>
+  <div class="mt-5"><p class="text-[15px] font-bold tracking-[-.025em] text-slate-800">${j.title}</p><p class="mt-1 text-[11px] font-medium text-[#5b55ed]">${j.department}</p><p class="mt-3 line-clamp-2 text-[11px] leading-5 text-slate-500">${j.description}</p></div>
+  <div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4"><span class="flex items-center gap-1 text-[10px] text-slate-400">${icon('pin',13)}${j.location}</span><button onclick="go('candidate-portal')" class="text-[11px] font-bold text-[#5b55ed]">Prévisualiser →</button></div></article>`).join('');
+  return `<div>${heading(dg?'Direction Générale':'Ressources Humaines',dg?'Création de poste & offres':'Offres d’emploi','Transformez les besoins validés en opportunités visibles par vos futurs talents.',`<button onclick="openJobForm()" class="primary-button">${icon('plus',16)}${dg?'Créer un poste':'Publier une offre'}</button>`)}<div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">${cards}</div></div>`;
+}
+function openJobForm() {
+  const ap = state.requests.filter(r => r.status === 'approved');
+  openModal(`<div class="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-slate-950/30 p-4 backdrop-blur-[1px]"><form onsubmit="event.preventDefault();submitJob()" class="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
+  <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5"><div><h2 class="text-[17px] font-bold text-slate-800">Créer une offre d’emploi</h2><p class="mt-1 text-[11px] text-slate-400">Publiez un poste issu d’une demande approuvée.</p></div><button type="button" onclick="closeModal()" class="text-slate-400">${icon('close',20)}</button></div>
+  <div class="grid gap-4 p-6 sm:grid-cols-2">
+  ${ap.length?`<label class="sm:col-span-2"><span class="label">Lier à une demande validée</span><select id="j-req" onchange="fillJob(this.value)" class="field"><option value="">Création indépendante</option>${ap.map(r=>`<option value="${r.id}">${r.reference} · ${r.title}</option>`).join('')}</select></label>`:''}
+  ${input('j-title','Intitulé du poste *','ex. Développeur Front-end')}
+  ${select('j-dept','Département',['Produit & Design','Finance','Data & Tech','Sales','Expérience client'])}
+  ${select('j-loc','Localisation',['Paris · Hybride','Paris','Lyon','Bordeaux','À distance'])}
+  ${select('j-contract','Contrat',['CDI','CDD','Stage','Alternance'])}
+  <label class="sm:col-span-2"><span class="label">Description du poste *</span><textarea id="j-desc" class="field min-h-[110px] resize-y" placeholder="Présentez l’équipe, les missions et le profil recherché..."></textarea></label></div>
+  <div class="flex justify-end gap-2 border-t border-slate-100 px-6 py-4"><button type="button" onclick="closeModal()" class="secondary-button">Annuler</button><button class="primary-button">${icon('send',15)}Publier l’offre</button></div></form></div>`);
+}
+function fillJob(id) {
+  const r = state.requests.find(x => x.id === id); if (!r) return;
+  $('j-title').value = r.title; $('j-dept').value = r.department; $('j-loc').value = r.location.replace(' / ',' · ');
+  $('j-contract').value = r.employmentType.includes('CDI') ? 'CDI' : r.employmentType;
+}
+function submitJob() {
+  if (!val('j-title') || !val('j-desc')) return;
+  state.jobs.unshift({ id:'job-'+Date.now(), title:val('j-title'), department:val('j-dept'), location:val('j-loc'), contractType:val('j-contract'), description:val('j-desc'), status:'published', publishedAt:new Date().toISOString() });
+  closeModal(); render(); toast('Offre publiée avec succès sur le portail candidats.');
+}
+
+function candidates() {
+  const list = [['Léa Moreau','Ingénieur Data',92,'À interviewer','bg-emerald-50 text-emerald-700'],['Nassim Haddad','Product Designer Senior',87,'Questionnaire envoyé','bg-violet-50 text-violet-700'],['Emma Roux','Customer Success Manager',81,'À étudier','bg-amber-50 text-amber-700']];
+  const qa = (q, a) => `<div class="flex items-center justify-between border-b border-slate-100 pb-2.5 text-[11px]"><span class="text-slate-500">${q}</span><span class="font-bold text-emerald-600">${a}</span></div>`;
+  return `<div>${heading('Ressources Humaines','Suivi des candidats','Découvrez les profils, leur avancée et leurs réponses sur les conditions de travail.',`<button class="secondary-button">${icon('filter',15)}Filtrer</button>`)}
+  <div class="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]"><section class="card overflow-hidden"><div class="grid grid-cols-[minmax(0,1fr)_110px_140px_38px] gap-3 border-b border-slate-100 px-5 py-3 text-[10px] font-bold uppercase tracking-[.09em] text-slate-400"><span>Candidat</span><span>Score</span><span>Étape</span><span></span></div>
+  ${list.map((c,i)=>`<button class="grid w-full grid-cols-[minmax(0,1fr)_110px_140px_38px] items-center gap-3 border-b border-slate-50 px-5 py-4 text-left last:border-0 ${i===1?'bg-indigo-50/55':'hover:bg-slate-50'}"><span class="flex min-w-0 items-center gap-3">${avatar(c[0],'lg')}<span class="min-w-0"><span class="block truncate text-[12px] font-bold text-slate-700">${c[0]}</span><span class="mt-0.5 block truncate text-[10px] text-slate-400">${c[1]}</span></span></span><span class="text-[13px] font-bold text-slate-700">${c[2]}%</span><span><span class="rounded-full px-2 py-1 text-[9px] font-bold ${c[4]}">${c[3]}</span></span>${icon('chevron',16)}</button>`).join('')}</section>
+  <aside class="card p-5"><div class="flex items-center gap-3">${avatar('Nassim Haddad','lg')}<div><p class="text-[14px] font-bold text-slate-800">Nassim Haddad</p><p class="text-[11px] text-slate-400">Product Designer Senior</p></div></div>
+  <div class="mt-5 rounded-xl bg-indigo-50/70 p-4"><div class="flex items-center justify-between"><p class="text-[11px] font-bold text-indigo-950">Questionnaire conditions</p><span class="text-[12px] font-bold text-indigo-600">4/4</span></div><div class="mt-3 h-1.5 overflow-hidden rounded-full bg-indigo-100"><div class="h-full w-full rounded-full bg-[#5b55ed]"></div></div><p class="mt-3 text-[11px] leading-5 text-indigo-700">Le candidat confirme l’adéquation avec le rythme hybride, la fourchette et les déplacements.</p></div>
+  <div class="mt-5 space-y-3">${qa('Rythme hybride (3 j./sem.)','Compatible')}${qa('Fourchette salariale','Compatible')}${qa('Disponibilité','Sous 1 mois')}</div>
+  <button class="primary-button mt-5 w-full justify-center">Planifier un entretien ${icon('arrow',15)}</button></aside></div></div>`;
+}
+
+let portalSearch = '';
+function portal() {
+  const list = state.jobs.filter(j => j.status !== 'draft' && `${j.title} ${j.department} ${j.location}`.toLowerCase().includes(portalSearch.toLowerCase()));
+  return `<div class="-mx-5 -my-6 min-h-[calc(100vh-72px)] bg-white sm:-mx-8 lg:-mx-9">
+  <div class="border-b border-slate-100 px-5 py-5 sm:px-8 lg:px-12"><div class="mx-auto flex max-w-6xl items-center justify-between">${logo()}<div class="flex items-center gap-3"><span class="hidden text-[11px] text-slate-500 sm:block">Déjà candidat ?</span><button onclick="state.role='RH';go('dashboard')" class="rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600">Espace RH</button></div></div></div>
+  <section class="relative overflow-hidden bg-[#171c49] px-5 py-14 sm:px-8 lg:px-12"><div class="absolute inset-0 opacity-70" style="background-image:radial-gradient(circle at 72% 45%,rgba(107,97,255,.55),transparent 28%),radial-gradient(circle at 22% 84%,rgba(39,195,179,.18),transparent 20%)"></div>
+  <div class="relative mx-auto max-w-6xl"><p class="text-[11px] font-bold uppercase tracking-[.16em] text-[#aaa6ff]">Rejoignez l’aventure</p><h1 class="mt-3 max-w-xl text-[34px] font-bold leading-[1.1] tracking-[-.055em] text-white sm:text-[42px]">Votre prochain chapitre commence ici.</h1><p class="mt-4 max-w-lg text-[13px] leading-6 text-indigo-100/75">Découvrez des opportunités où votre ambition, vos idées et votre singularité ont toute leur place.</p>
+  <div class="mt-7 flex max-w-xl items-center rounded-xl bg-white p-1.5 shadow-xl">${icon('search',18)}<input id="pq" value="${portalSearch}" onkeydown="if(event.key==='Enter'){portalSearch=this.value;render()}" class="h-10 flex-1 px-3 text-[12px] text-slate-700 outline-none" placeholder="Métier, équipe ou ville..."><button onclick="portalSearch=$('pq').value;render()" class="rounded-lg bg-[#4f46e5] px-4 py-2.5 text-[11px] font-bold text-white">Rechercher</button></div></div></section>
+  <section class="mx-auto max-w-6xl px-5 py-10 sm:px-8 lg:px-12"><p class="text-[11px] font-bold uppercase tracking-[.12em] text-[#5b55ed]">Opportunités</p><h2 class="mt-1 text-[25px] font-bold tracking-[-.045em] text-slate-900">Postes ouverts <span class="text-slate-400">(${list.length})</span></h2>
+  <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">${list.map(j=>`<article class="flex min-h-[260px] flex-col rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-indigo-200 hover:shadow-[0_12px_30px_rgba(79,70,229,.1)]"><div class="flex justify-between"><span class="grid h-10 w-10 place-items-center rounded-xl bg-indigo-50 text-[#5b55ed]">${icon('briefcase',18)}</span><span class="text-[10px] font-medium text-slate-400">Publié ${fmtDate(j.publishedAt)}</span></div><h3 class="mt-5 text-[16px] font-bold tracking-[-.025em] text-slate-800">${j.title}</h3><p class="mt-1 text-[11px] font-semibold text-[#5b55ed]">${j.department}</p><p class="mt-3 line-clamp-2 text-[11px] leading-5 text-slate-500">${j.description}</p>
+  <div class="mt-auto flex items-center justify-between border-t border-slate-100 pt-4"><span class="flex flex-col gap-1 text-[10px] text-slate-400"><span class="flex items-center gap-1">${icon('pin',12)}${j.location}</span><span>${j.contractType}</span></span><button onclick="openApply('${j.id}')" class="rounded-lg bg-[#eeedff] px-3 py-2 text-[10px] font-bold text-[#514bd7]">Postuler</button></div></article>`).join('')}</div>
+  ${list.length?'':'<div class="py-16 text-center text-[12px] text-slate-400">Aucune offre ne correspond à cette recherche.</div>'}
+  <div class="mt-12 rounded-2xl bg-[#f3f2ff] p-6 text-center"><span class="mx-auto grid h-9 w-9 place-items-center rounded-xl bg-white text-[#5b55ed]">${icon('sparkle',17)}</span><h3 class="mt-3 text-[15px] font-bold text-slate-800">Vous ne trouvez pas l’opportunité idéale ?</h3><p class="mt-1 text-[11px] text-slate-500">Envoyez-nous votre candidature spontanée, nous aimons rencontrer les talents curieux.</p><button class="mt-4 text-[11px] font-bold text-[#5b55ed]">Candidature spontanée →</button></div></section></div>`;
+}
+
+/* ---------- Tiroir de détail ---------- */
+function openRequest(id) {
+  const r = state.requests.find(x => x.id === id);
+  const tl = (l, s, on) => `<div class="flex gap-3"><span class="mt-0.5 grid h-5 w-5 place-items-center rounded-full ${on?'bg-emerald-500 text-white':'bg-slate-100 text-slate-400'}">${icon(on?'check':'clock',12)}</span><span><span class="block text-[11px] font-bold text-slate-700">${l}</span><span class="mt-0.5 block text-[10px] text-slate-400">${s}</span></span></div>`;
+  const info = (l, v) => `<div><p class="text-[10px] font-bold uppercase tracking-[.08em] text-slate-400">${l}</p><p class="mt-2 text-[11px] font-semibold text-slate-700">${v}</p></div>`;
+  openModal(`<div class="fixed inset-0 z-50"><button onclick="closeModal()" class="absolute inset-0 bg-slate-950/25 backdrop-blur-[1px]" aria-label="Fermer"></button>
+  <aside class="absolute right-0 top-0 h-full w-full max-w-[475px] overflow-y-auto bg-white shadow-2xl"><div class="flex items-center justify-between border-b border-slate-100 px-6 py-5"><div><p class="text-[10px] font-bold uppercase tracking-[.1em] text-[#5b55ed]">Détail de la demande</p><p class="mt-1 text-[11px] text-slate-400">${r.reference}</p></div><button onclick="closeModal()" class="grid h-8 w-8 place-items-center rounded-lg bg-slate-50 text-slate-500">${icon('close',17)}</button></div>
+  <div class="p-6"><div class="flex items-start justify-between gap-3"><div><h2 class="text-[22px] font-bold tracking-[-.04em] text-slate-800">${r.title}</h2><p class="mt-2 text-[12px] text-slate-500">${r.department} · ${r.employmentType}</p></div>${badge(r.status)}</div>
+  <div class="mt-6 grid grid-cols-2 gap-3 rounded-xl bg-slate-50 p-4">${info('Manager',r.manager)}${info('Budget',r.budget.toLocaleString('fr-FR')+' €')}${info('Localisation',r.location)}${info('Créée le',fmtDate(r.createdAt))}</div>
+  <div class="mt-6"><p class="text-[12px] font-bold text-slate-700">Justification du besoin</p><p class="mt-2 text-[12px] leading-6 text-slate-500">${r.justification}</p></div>
+  <div class="mt-7 border-t border-slate-100 pt-5"><p class="text-[12px] font-bold text-slate-700">Parcours de validation</p><div class="mt-4 space-y-4">${tl('Demande créée par le manager','Envoyée à la validation RH',true)}${tl('Validation RH',r.status==='pending_hr'?'À traiter':'Validée',r.status!=='pending_hr')}${tl('Validation Direction Générale',r.status==='pending_dg'?'Décision attendue':r.status==='approved'?'Validée':'À venir',['pending_dg','approved'].includes(r.status))}</div></div></div>
+  <div class="sticky bottom-0 flex gap-2 border-t border-slate-100 bg-white p-5">${state.role==='RH'&&r.status==='pending_hr'?`<button onclick="setStatus('${r.id}','pending_dg')" class="primary-button w-full justify-center">${icon('arrow',15)}Transmettre à la DG</button>`:''}${state.role==='Direction générale'&&r.status==='pending_dg'?`<button onclick="setStatus('${r.id}','approved')" class="primary-button w-full justify-center">${icon('check',15)}Valider l’ouverture</button>`:''}<button onclick="closeModal()" class="secondary-button">Fermer</button></div></aside></div>`);
+}
+
+/* ---------- Candidature (2 étapes) ---------- */
+function openApply(id) {
+  const j = state.jobs.find(x => x.id === id);
+  const choice = (name, label, opts, def) => `<div><span class="mb-2 block text-[12px] font-semibold text-slate-700">${label}</span><div class="flex flex-wrap gap-2">${opts.map(o=>`<button type="button" data-g="${name}" data-v="${o}" onclick="pick(this)" class="rounded-lg border px-3 py-2 text-[11px] font-bold capitalize ${o===def?'border-indigo-200 bg-indigo-50 text-indigo-700':'border-slate-200 text-slate-500'}">${o}</button>`).join('')}</div></div>`;
+  openModal(`<div class="fixed inset-0 z-[60] grid place-items-center overflow-y-auto bg-slate-950/35 p-4 backdrop-blur-[1px]"><form onsubmit="event.preventDefault();applyNext()" class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+  <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5"><div><p id="a-step" class="text-[10px] font-bold uppercase tracking-[.1em] text-[#5b55ed]">Candidature · Étape 1/2</p><h2 class="mt-1 text-[17px] font-bold text-slate-800">${j.title}</h2></div><button type="button" onclick="closeModal()" class="text-slate-400">${icon('close',20)}</button></div>
+  <div class="px-6 pt-5"><div class="h-1.5 overflow-hidden rounded-full bg-slate-100"><div id="a-bar" class="h-full rounded-full bg-[#5b55ed] transition-all" style="width:50%"></div></div>
+  <div id="a1" class="grid gap-4 py-6 sm:grid-cols-2">${input('a-fn','Prénom *','Votre prénom')}${input('a-ln','Nom *','Votre nom')}${input('a-em','Email *','vous@email.com','email')}${input('a-ph','Téléphone','06 00 00 00 00')}${input('a-xp','Années d’expérience','ex. 4','number')}
+  <div class="flex items-end"><div class="w-full rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-center text-[10px] font-semibold text-slate-500">+ Ajouter CV (PDF)</div></div>
+  <label class="sm:col-span-2"><span class="label">Pourquoi ce poste vous intéresse ? *</span><textarea id="a-mo" class="field min-h-[95px] resize-y" placeholder="Parlez-nous de votre motivation..."></textarea></label></div>
+  <div id="a2" class="hidden py-6"><div class="rounded-xl bg-[#f3f2ff] p-4"><div class="flex gap-3"><span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white text-[#5b55ed]">${icon('sparkle',16)}</span><div><p class="text-[12px] font-bold text-indigo-950">Votre cadre de travail idéal</p><p class="mt-1 text-[11px] leading-5 text-indigo-700">Ces quelques questions nous aident à vérifier que l’environnement proposé est compatible avec vos attentes.</p></div></div></div>
+  <div class="mt-5 space-y-4">${choice('hybrid','Le rythme hybride (3 jours sur site) vous convient-il ?',['oui','non','à discuter'],'oui')}${choice('salary','La fourchette de rémunération mentionnée vous convient-elle ?',['oui','non','à discuter'],'oui')}${choice('avail','Quelle serait votre disponibilité ?',['Immédiate','1 mois','2 mois','Plus de 2 mois'],'1 mois')}</div></div></div>
+  <div class="flex items-center justify-between border-t border-slate-100 px-6 py-4"><button id="a-back" type="button" onclick="applyStep(1)" class="hidden text-[11px] font-bold text-slate-500">← Retour</button><span id="a-sp"></span><button id="a-next" class="primary-button">Continuer ${icon('arrow',15)}</button></div></form></div>`);
+}
+function pick(btn) {
+  document.querySelectorAll(`[data-g="${btn.dataset.g}"]`).forEach(b => b.className = 'rounded-lg border px-3 py-2 text-[11px] font-bold capitalize border-slate-200 text-slate-500');
+  btn.className = 'rounded-lg border px-3 py-2 text-[11px] font-bold capitalize border-indigo-200 bg-indigo-50 text-indigo-700';
+}
+function applyStep(n) {
+  $('a1').classList.toggle('hidden', n !== 1); $('a2').classList.toggle('hidden', n !== 2);
+  $('a-back').classList.toggle('hidden', n !== 2); $('a-bar').style.width = n === 1 ? '50%' : '100%';
+  $('a-step').textContent = `Candidature · Étape ${n}/2`;
+  $('a-next').innerHTML = n === 1 ? `Continuer ${icon('arrow',15)}` : `Envoyer ma candidature ${icon('send',15)}`;
+  $('a-next').dataset.step = n;
+}
+function applyNext() {
+  if ($('a-next').dataset.step === '2') { closeModal(); toast('Candidature reçue ! Un email de confirmation va vous être envoyé.'); return; }
+  if (val('a-fn') && val('a-ln') && val('a-em') && val('a-mo')) applyStep(2);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+hydrate();
+</script>
+</body>
+</html>

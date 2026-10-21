@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelle demande de recrutement</title>
+    <meta name="_csrf" th:if="${_csrf != null}" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:if="${_csrf != null}" th:content="${_csrf.headerName}">
+    <link rel="stylesheet" th:href="@{/css/talently.css}">
+</head>
+<body>
+
+<main class="page">
+    <header class="page-header">
+        <p class="eyebrow">Recrutement</p>
+        <h1 class="page-title">Nouvelle demande de recrutement</h1>
+        <p class="page-subtitle">Renseignez le département, le type de demande, puis les postes concernés.</p>
+    </header>
+
+    <div id="alert" class="hidden"></div>
+
+    <form id="demande-form" class="card" th:attr="data-base-url=@{/demandes-recrutement}" novalidate>
+
+        <div class="card-header">
+            <h2 class="card-title">Informations de la demande</h2>
+            <p class="card-hint">Choisissez le type pour adapter les lignes de postes.</p>
+        </div>
+
+        <div class="card-body">
+            <!-- Champs 1 et 2 -->
+            <div class="grid-2">
+                <div>
+                    <label for="departement" class="label">Département demandeur</label>
+                    <select id="departement" name="departementId" class="field">
+                        <option value="">— Choisir un département —</option>
+                        <option th:each="d : ${departements}" th:value="${d.id}" th:text="${d.nom}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label for="typeDemande" class="label">Type de demande</label>
+                    <select id="typeDemande" name="typeId" class="field">
+                        <option value="">— Choisir un type —</option>
+                        <option th:each="t : ${types}" th:value="${t.id}" th:text="${t.libelle}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lignes (champs 3 à 6) : le comportement dépend du type -->
+            <div id="zone-lignes" class="lignes-zone hidden">
+                <div class="lignes-head">
+                    <h2 class="lignes-title">Postes demandés</h2>
+                    <button type="button" id="btn-ajouter" class="primary-button">
+                        <span class="plus">+</span> Ajouter une ligne
+                    </button>
+                </div>
+
+                <div id="lignes" class="lignes-list"></div>
+
+                <div class="total">
+                    <span class="total-label">Budget total estimé :</span>
+                    <span id="budget-total" class="total-value">0,00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <p>La demande sera soumise à la validation RH.</p>
+            <button type="submit" class="primary-button">Envoyer la demande</button>
+        </div>
+    </form>
+</main>
+
+<!-- Modèle d'une ligne : mère | fille | effectif | budget | − -->
+<template id="ligne-template">
+    <div data-ligne class="ligne">
+        <div>
+            <label class="label">Poste mère</label>
+            <select data-role="mere" class="field">
+                <option value="">— Choisir —</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="label">Poste</label>
+            <!-- Remplacement : liste des postes vacants -->
+            <select data-role="fille-select" class="field">
+                <option value="">— Choisir —</option>
+            </select>
+            <!-- Création : poste généré automatiquement (ex : DEV 4) -->
+            <input data-role="fille-auto" type="text" readonly placeholder="Généré automatiquement" class="field hidden">
+        </div>
+
+        <div>
+            <label class="label">Effectif</label>
+            <input data-role="effectif" type="number" min="1" step="1" disabled class="field">
+            <p data-role="effectif-hint" class="hint"></p>
+        </div>
+
+        <div>
+            <label class="label">Budget (grille salariale)</label>
+            <input data-role="budget" type="text" readonly class="field">
+        </div>
+
+        <div class="ligne-remove">
+            <button type="button" data-role="supprimer" title="Retirer cette ligne" class="icon-button">−</button>
+        </div>
+    </div>
+</template>
+
+<script th:src="@{/js/demande-recrutement-form.js}"></script>
+</body>
+</html>
