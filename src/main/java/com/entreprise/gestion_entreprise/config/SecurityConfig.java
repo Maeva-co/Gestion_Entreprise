@@ -13,8 +13,26 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http,
+                                    SecurityContextRepository securityContextRepository) throws Exception {
+        http
+                .securityContext(sc -> sc.securityContextRepository(securityContextRepository))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/connexion", "/deconnexion", "/css/**", "/js/**", "/favicon.ico")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/connexion")));
         return http.build();
     }
 }

@@ -63,14 +63,18 @@ INSERT INTO statut_validation (code, libelle) VALUES
 
 -- 8. Utilisateurs
 -- Pour une application réelle, stocker uniquement des mots de passe hachés.
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, departement_id, role_id) VALUES
-('Rakoto', 'Miora', 'miora.rakoto@entreprise.test', 'test_hash_admin', 1, 1),
-('Rabe', 'Hery', 'hery.rabe@entreprise.test', 'test_hash_rh', 1, 2),
-('Andria', 'Lova', 'lova.andria@entreprise.test', 'test_hash_it', 2, 3),
-('Ramanantsoa', 'Tiana', 'tiana.ramanantsoa@entreprise.test', 'test_hash_finance', 3, 4),
-('Randria', 'Fanja', 'fanja.randria@entreprise.test', 'test_hash_dg', 1, 5),
-('Rasolonjatovo', 'Toky', 'toky.rasolonjatovo@entreprise.test', 'test_hash_commercial', 4, 3),
-('Ravelo', 'Noro', 'noro.ravelo@entreprise.test', 'test_hash_production', 5, 3);
+('Rakoto', 'Miora', 'miora.rakoto@entreprise.test', crypt('admin123', gen_salt('bf', 10)), 1, 1),
+('Rabe', 'Hery', 'hery.rabe@entreprise.test', crypt('rh123', gen_salt('bf', 10)), 1, 2),
+('Andria', 'Lova', 'lova.andria@entreprise.test', crypt('it123', gen_salt('bf', 10)), 2, 3),
+('Ramanantsoa', 'Tiana', 'tiana.ramanantsoa@entreprise.test', crypt('finance123', gen_salt('bf', 10)), 3, 4),
+('Randria', 'Fanja', 'fanja.randria@entreprise.test', crypt('dg123', gen_salt('bf', 10)), 1, 5),
+('Rasolonjatovo', 'Toky', 'toky.rasolonjatovo@entreprise.test', crypt('commercial123', gen_salt('bf', 10)), 4, 3),
+('Ravelo', 'Noro', 'noro.ravelo@entreprise.test', crypt('production123', gen_salt('bf', 10)), 5, 3);
+
+
 
 -- 9. Postes
 -- Les postes parents sont insérés avant leurs postes enfants.

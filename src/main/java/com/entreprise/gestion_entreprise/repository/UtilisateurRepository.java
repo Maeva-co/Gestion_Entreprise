@@ -10,7 +10,8 @@ import java.util.Optional;
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Integer> {
 
-    Optional<Utilisateur> findByEmail(String email);
+    @Query("SELECT u FROM Utilisateur u JOIN FETCH u.role WHERE u.email = :email")
+    Optional<Utilisateur> findByEmail(@Param("email") String email);
 
     boolean existsByEmail(String email);
 
