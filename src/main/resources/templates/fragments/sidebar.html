@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <body>
+    <!--
+      Fragment : menu latéral
+      Appel dans une page (identique partout, aucun paramètre) :
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+      L'item actif est déterminé automatiquement avec `currentUri`.
+      Variables du modèle fournies par GlobalModelAdvice :
+        currentUri, nombreEnAttente, nombreRefusees (+ utilisateur).
+    -->
+    <aside class="app-sidebar" th:fragment="sidebar">
+      <a
+        class="brand"
+        th:href="@{${#authorization.expression('hasAnyRole(''DG'',''RH'')')} ? '/demandes-recrutement/validation/rh/liste' : '/candidate-portal'}"
+      >
+        <span class="logo-mark"></span>
+        <span class="logo-text">Talent<span class="logo-accent">ly</span></span>
+      </a>
+
+      <!-- Espace Ressources Humaines : visible uniquement pour DG et RH -->
+      <th:block sec:authorize="hasAnyRole('DG','RH')">
+        <p class="nav-section">Espace Ressources Humaines</p>
+
+        <nav class="nav">
+          <!-- Nouvelle demande (RH uniquement) -->
+          <a
+            sec:authorize="hasRole('RH')"
+            th:href="@{/demandes-recrutement/nouvelle}"
+            class="nav-item"
+            th:classappend="${#strings.startsWith(currentUri, '/demandes-recrutement/nouvelle')} ? 'active'"
+          >
+            <span class="nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </span>
+            <span class="nav-label">Nouvelle demande</span>
+          </a>
+
+          <!-- Demandes en attente -->
+          <a
+            th:href="@{/demandes-recrutement/validation/rh/liste}"
+            class="nav-item"
+            th:classappend="${#strings.startsWith(currentUri, '/demandes-recrutement/validation/rh/liste')} ? 'active'"
+          >
+            <span class="nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+            </span>
+            <span class="nav-label">Demandes en attente</span>
+            <span class="nav-badge" th:if="${nombreEnAttente != null}" th:text="${nombreEnAttente}">0</span>
+          </a>
+
+          <!-- Demandes refusées -->
+          <a
+            th:href="@{/demandes-recrutement/validation/rh/refusees}"
+            class="nav-item"
+            th:classappend="${#strings.startsWith(currentUri, '/demandes-recrutement/validation/rh/refusees')} ? 'active'"
+          >
+            <span class="nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="m15 9-6 6M9 9l6 6" />
+              </svg>
+            </span>
+            <span class="nav-label">Demandes refusées</span>
+            <span class="nav-badge" th:if="${nombreRefusees != null}" th:text="${nombreRefusees}">0</span>
+          </a>
+        </nav>
+      </th:block>
+
+      <div class="sidebar-bottom">
+        <a class="portal-link" th:href="@{/candidate-portal}">
+          <span class="nav-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m12 3-1.3 5.7L5 10l5.7 1.3L12 17l1.3-5.7L19 10l-5.7-1.3L12 3Z" />
+            </svg>
+          </span>
+          <span>Voir le portail<small>candidats public</small></span>
+          <svg class="arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+
+        <div class="user-box">
+          <span
+            class="avatar"
+            th:text="${#strings.substring(utilisateur.prenom,0,1) + #strings.substring(utilisateur.nom,0,1)}"
+            >UT</span
+          >
+          <div class="user-info">
+            <p class="user-name" th:text="${utilisateur.prenom + ' ' + utilisateur.nom}">Utilisateur</p>
+            <p class="user-role" th:text="${utilisateur.role.code}">RH</p>
+          </div>
+          <form class="logout-form" th:action="@{/deconnexion}" method="get">
+            <button type="submit" class="logout-button" title="Se déconnecter" aria-label="Se déconnecter">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10 17l5-5-5-5M15 12H3" />
+                <path d="M21 19V5a2 2 0 0 0-2-2h-6" />
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </aside>
+  </body>
+</html>

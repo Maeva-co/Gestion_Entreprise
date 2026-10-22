@@ -23,7 +23,7 @@ public class DemandeRecrutementController {
     private final UtilisateurRepository utilisateurRepository;
 
     public DemandeRecrutementController(DemandeRecrutementService service,
-                                        UtilisateurRepository utilisateurRepository) {
+            UtilisateurRepository utilisateurRepository) {
         this.service = service;
         this.utilisateurRepository = utilisateurRepository;
     }
@@ -31,13 +31,17 @@ public class DemandeRecrutementController {
     // ---------- Page du formulaire ----------
 
     @GetMapping("/nouvelle")
-    public String afficherFormulaire(Model model) {
-        model.addAttribute("departements", service.getDepartements());
-        model.addAttribute("types", service.getTypesDemande());
-        return "demande-recrutement/form";
-    }
+public String afficherFormulaire(Model model) {
+    model.addAttribute("page", "form");
+    model.addAttribute("departements", service.getDepartements());
+    model.addAttribute("types", service.getTypesDemande());
+    return "demande-recrutement/form";
+}
 
-    /** Postes mères du département choisi (chargés par le JS au changement de département). */
+    /**
+     * Postes mères du département choisi (chargés par le JS au changement de
+     * département).
+     */
     @GetMapping("/api/postes-meres")
     @ResponseBody
     public List<PosteDto> postesMeres(@RequestParam Integer departementId) {
@@ -46,11 +50,14 @@ public class DemandeRecrutementController {
 
     // ---------- Endpoints appelés par le JS ----------
 
-    /** Type 1 : postes filles vacants du poste mère dans le département + effectif max. */
+    /**
+     * Type 1 : postes filles vacants du poste mère dans le département + effectif
+     * max.
+     */
     @GetMapping("/api/postes-vacants")
     @ResponseBody
     public List<PosteVacantDto> postesVacants(@RequestParam Integer departementId,
-                                              @RequestParam Integer posteMereId) {
+            @RequestParam Integer posteMereId) {
         return service.getPostesVacants(departementId, posteMereId);
     }
 
@@ -61,11 +68,14 @@ public class DemandeRecrutementController {
         return service.getBudgetPosteMere(posteMereId);
     }
 
-    /** Type 2 : prochain poste à créer (DEV 4) + budget du poste similaire du département. */
+    /**
+     * Type 2 : prochain poste à créer (DEV 4) + budget du poste similaire du
+     * département.
+     */
     @GetMapping("/api/prochain-poste")
     @ResponseBody
     public ProchainPosteDto prochainPoste(@RequestParam Integer departementId,
-                                          @RequestParam Integer posteMereId) {
+            @RequestParam Integer posteMereId) {
         return service.getProchainPoste(departementId, posteMereId);
     }
 
@@ -75,12 +85,15 @@ public class DemandeRecrutementController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> creer(@RequestBody DemandeForm form, Principal principal) {
         try {
-            // À adapter : récupération de l'utilisateur connecté (email, login, session...).
-            // DEV : sans connexion (principal nul), on prend le premier utilisateur de la base.
+            // À adapter : récupération de l'utilisateur connecté (email, login,
+            // session...).
+            // DEV : sans connexion (principal nul), on prend le premier utilisateur de la
+            // base.
             Utilisateur demandeur = (principal != null
                     ? utilisateurRepository.findByEmail(principal.getName())
                     : utilisateurRepository.findAll().stream().findFirst())
-                    .orElseThrow(() -> new IllegalStateException("Aucun utilisateur trouvé : insérez des utilisateurs de test."));
+                    .orElseThrow(() -> new IllegalStateException(
+                            "Aucun utilisateur trouvé : insérez des utilisateurs de test."));
 
             DemandeRecrutement demande = service.creer(form, demandeur);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -92,7 +105,10 @@ public class DemandeRecrutementController {
         }
     }
 
-    /** Les endpoints GET renvoient aussi un message lisible par le JS en cas d'erreur de validation. */
+    /**
+     * Les endpoints GET renvoient aussi un message lisible par le JS en cas
+     * d'erreur de validation.
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseBody
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException e) {

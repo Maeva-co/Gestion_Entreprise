@@ -1,0 +1,58 @@
+package com.entreprise.gestion_entreprise.controller;
+
+import java.security.Principal;
+
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
+
+import com.entreprise.gestion_entreprise.model.Utilisateur;
+import com.entreprise.gestion_entreprise.repository.UtilisateurRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+/**
+ * Données communes aux pages qui affichent le menu latéral :
+ * utilisateur connecté, URI courante (item actif) et compteurs des badges.
+ * Si une autre page utilise le fragment sidebar, ajouter son contrôleur
+ * dans assignableTypes.
+ */
+@ControllerAdvice(assignableTypes = {
+        ValidationLigneController.class,
+        DemandeRecrutementController.class })
+public class UtilisateurModelAdvice {
+
+    private final UtilisateurRepository utilisateurRepository;
+    // TODO : injecter ton service / repository de demandes
+    // private final DemandeRecrutementRepository demandeRepository;
+
+    public UtilisateurModelAdvice(UtilisateurRepository utilisateurRepository) {
+        this.utilisateurRepository = utilisateurRepository;
+    }
+
+    @ModelAttribute("utilisateur")
+    public Utilisateur utilisateur(Principal principal) {
+        if (principal == null) return null;
+        return utilisateurRepository.findByEmail(principal.getName()).orElse(null);
+    }
+
+    @ModelAttribute("currentUri")
+    public String currentUri(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String ctx = request.getContextPath();
+        return (ctx != null && !ctx.isEmpty() && uri.startsWith(ctx))
+                ? uri.substring(ctx.length())
+                : uri;
+    }
+
+    @ModelAttribute("nombreEnAttente")
+    public long nombreEnAttente() {
+        // TODO : ta vraie requête (ex. statut EN_ATTENTE_RH)
+        return 0;
+    }
+
+    @ModelAttribute("nombreRefusees")
+    public long nombreRefusees() {
+        // TODO : ta vraie requête (ex. statut REFUSEE_RH)
+        return 0;
+    }
+}

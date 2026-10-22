@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<span th:fragment="avatar(prenom, nom)"
+      class="grid h-9 w-9 place-items-center rounded-full bg-[#eeedff] text-[12px] font-bold text-[#4f46e5]"
+      th:text="${#strings.toUpperCase(#strings.substring(prenom,0,1) + #strings.substring(nom,0,1))}">JD</span>
+</body>
+</html>

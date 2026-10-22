@@ -1,7 +1,9 @@
 package com.entreprise.gestion_entreprise.repository;
 
-import com.entreprise.gestion_entreprise.model.*;
+import com.entreprise.gestion_entreprise.model.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +20,5 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Intege
     List<Utilisateur> findByDepartementId(Integer departementId);
 
     List<Utilisateur> findByRoleCode(String roleCode);
+
 }
