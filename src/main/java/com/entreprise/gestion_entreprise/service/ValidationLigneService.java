@@ -13,8 +13,8 @@ import com.entreprise.gestion_entreprise.repository.StatutValidationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ValidationLigneService {
@@ -38,24 +38,25 @@ public class ValidationLigneService {
     private final HistoriqueValidationLigneRepository historiqueRepository;
     private final StatutValidationRepository statutValidationRepository;
     private final StatutLigneRepository statutLigneRepository;
+    private final OffreEmploiService offreEmploiService;
 
     public ValidationLigneService(LigneDemandeRecrutementRepository ligneRepository,
             HistoriqueValidationLigneRepository historiqueRepository,
             StatutValidationRepository statutValidationRepository,
-            StatutLigneRepository statutLigneRepository) {
+            StatutLigneRepository statutLigneRepository, OffreEmploiService offreEmploiService) {
         this.ligneRepository = ligneRepository;
         this.historiqueRepository = historiqueRepository;
         this.statutValidationRepository = statutValidationRepository;
         this.statutLigneRepository = statutLigneRepository;
+        this.offreEmploiService = offreEmploiService;
     }
 
     // ---------- Lectures ----------
 
     @Transactional(readOnly = true)
     public List<LigneDemandeRecrutement> getLignesEnAttenteRH() {
-    return ligneRepository.findLignesEnAttenteValidationRH();
+        return ligneRepository.findLignesEnAttenteValidationRH();
     }
-
 
     @Transactional(readOnly = true)
     public List<LigneDemandeRecrutement> getLignesRefuseesParRH() {
@@ -76,6 +77,16 @@ public class ValidationLigneService {
     public LigneDemandeRecrutement getLigne(Integer ligneId) {
         return ligneRepository.findById(ligneId)
                 .orElseThrow(() -> new RegleGestionException("Ligne de recrutement introuvable (id " + ligneId + ")."));
+    }
+
+    @Transactional(readOnly = true)
+    public long compterEnAttenteRH() {
+        return getLignesEnAttenteRH().size();
+    }
+
+    @Transactional(readOnly = true)
+    public long compterRefuseesRH() {
+        return getLignesRefuseesParRH().size();
     }
 
     // ---------- Décisions RH ----------
@@ -152,11 +163,11 @@ public class ValidationLigneService {
             throw new RegleGestionException("Seul le Directeur Général peut valider à l'étape DG.");
         }
 
-        // 3. Vérifier que la ligne attend effectivement une décision à cette étape.
+        // 3. Vérifier que la ligne peut recevoir une décision.
         if (ETAPE_RH.equals(etape)) {
             verifierAttenteRH(ligne);
         } else {
-            verifierAttenteDG(ligne);
+            verifierDGPeutDecider(ligne, decisionCode);
         }
 
         // 4. Récupérer le statut de validation correspondant à la décision.
@@ -192,6 +203,15 @@ public class ValidationLigneService {
         ligne.setStatutLigne(nouveauStatutLigne);
 
         ligneRepository.save(ligne);
+
+        // 7. Transformation en offre d'emploi (étape DG uniquement)
+        if (ETAPE_DG.equals(etape)) {
+            if (CODE_APPROUVEE.equals(decisionCode)) {
+                offreEmploiService.creerDepuisLigne(ligne);
+            } else {
+                offreEmploiService.retirerOffreDeLigne(ligne);
+            }
+        }
     }
 
     private void verifierAttenteRH(LigneDemandeRecrutement ligne) {
@@ -206,23 +226,53 @@ public class ValidationLigneService {
         }
     }
 
-    private void verifierAttenteDG(LigneDemandeRecrutement ligne) {
-        // La ligne doit avoir été acceptée par le RH et ne pas avoir déjà une décision
-        // DG.
-        boolean approuveeParRH = historiqueRepository.findByLigneDemandeIdAndEtape(ligne.getId(), ETAPE_RH)
-                .stream()
-                .anyMatch(h -> CODE_APPROUVEE.equals(h.getStatutValidation().getCode()));
-        boolean dejaDecideParDG = historiqueRepository.findByLigneDemandeIdAndEtape(ligne.getId(), ETAPE_DG)
-                .stream()
-                .anyMatch(h -> CODE_APPROUVEE.equals(h.getStatutValidation().getCode())
-                        || CODE_REFUSEE.equals(h.getStatutValidation().getCode()));
-        if (!approuveeParRH || dejaDecideParDG) {
-            throw new RegleGestionException("Cette ligne n'attend pas de décision de l'étape DG.");
+    /**
+     * Le DG peut décider sur n'importe quelle ligne, y compris une ligne refusée
+     * par le RH ou la Finance. Seul garde-fou : ne pas enregistrer deux fois de
+     * suite
+     * la même décision DG.
+     */
+    private void verifierDGPeutDecider(LigneDemandeRecrutement ligne, String decisionCode) {
+        List<HistoriqueValidationLigne> decisionsDG = historiqueRepository
+                .findByLigneDemandeIdOrderByDateActionAsc(ligne.getId()).stream()
+                .filter(h -> ETAPE_DG.equals(h.getEtape()))
+                .collect(Collectors.toList());
+        if (!decisionsDG.isEmpty()) {
+            HistoriqueValidationLigne derniere = decisionsDG.get(decisionsDG.size() - 1);
+            if (decisionCode.equals(derniere.getStatutValidation().getCode())) {
+                throw new RegleGestionException(CODE_APPROUVEE.equals(decisionCode)
+                        ? "Cette demande a déjà été validée par la Direction Générale."
+                        : "Cette demande a déjà été refusée par la Direction Générale.");
+            }
         }
     }
 
     private StatutLigne findStatutLigne(String code) {
         return statutLigneRepository.findByCode(code)
                 .orElseThrow(() -> new RegleGestionException("Statut de ligne '" + code + "' introuvable."));
+    }
+
+    @Transactional
+    public void accepterLigne(Integer ligneId, String commentaire, Utilisateur valideur) {
+        validerLigne(ligneId, CODE_APPROUVEE, etapeSelonRole(valideur), commentaire, valideur);
+    }
+
+    @Transactional
+    public void refuserLigne(Integer ligneId, String commentaire, Utilisateur valideur) {
+        if (commentaire == null || commentaire.trim().isEmpty()) {
+            throw new RegleGestionException("Un commentaire est obligatoire pour refuser une demande.");
+        }
+        validerLigne(ligneId, CODE_REFUSEE, etapeSelonRole(valideur), commentaire, valideur);
+    }
+
+    private String etapeSelonRole(Utilisateur valideur) {
+        String roleCode = (valideur != null && valideur.getRole() != null)
+                ? valideur.getRole().getCode()
+                : null;
+        if ("DG".equals(roleCode))
+            return ETAPE_DG;
+        if ("RH".equals(roleCode))
+            return ETAPE_RH;
+        throw new RegleGestionException("Vous n'avez pas le droit de valider une demande de recrutement.");
     }
 }

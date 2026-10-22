@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.entreprise.gestion_entreprise.model.Utilisateur;
 import com.entreprise.gestion_entreprise.repository.UtilisateurRepository;
+import com.entreprise.gestion_entreprise.service.ValidationLigneService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -18,20 +19,25 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 @ControllerAdvice(assignableTypes = {
         ValidationLigneController.class,
-        DemandeRecrutementController.class })
+        DemandeRecrutementController.class,
+        OffreController.class })
 public class UtilisateurModelAdvice {
 
     private final UtilisateurRepository utilisateurRepository;
+    private final ValidationLigneService validationService;
     // TODO : injecter ton service / repository de demandes
     // private final DemandeRecrutementRepository demandeRepository;
 
-    public UtilisateurModelAdvice(UtilisateurRepository utilisateurRepository) {
+    public UtilisateurModelAdvice(UtilisateurRepository utilisateurRepository,
+            ValidationLigneService validationService) {
         this.utilisateurRepository = utilisateurRepository;
+        this.validationService = validationService;
     }
 
     @ModelAttribute("utilisateur")
     public Utilisateur utilisateur(Principal principal) {
-        if (principal == null) return null;
+        if (principal == null)
+            return null;
         return utilisateurRepository.findByEmail(principal.getName()).orElse(null);
     }
 
@@ -46,13 +52,11 @@ public class UtilisateurModelAdvice {
 
     @ModelAttribute("nombreEnAttente")
     public long nombreEnAttente() {
-        // TODO : ta vraie requête (ex. statut EN_ATTENTE_RH)
-        return 0;
+        return validationService.compterEnAttenteRH();
     }
 
     @ModelAttribute("nombreRefusees")
     public long nombreRefusees() {
-        // TODO : ta vraie requête (ex. statut REFUSEE_RH)
-        return 0;
+        return validationService.compterRefuseesRH();
     }
 }

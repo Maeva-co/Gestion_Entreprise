@@ -75,6 +75,22 @@
             <span class="nav-label">Demandes refusées</span>
             <span class="nav-badge" th:if="${nombreRefusees != null}" th:text="${nombreRefusees}">0</span>
           </a>
+
+          <!-- Offres d'emploi (RH uniquement, cf. SecurityConfig : /offres/**) -->
+          <a
+            sec:authorize="hasRole('RH')"
+            th:href="@{/offres}"
+            class="nav-item"
+            th:classappend="${#strings.startsWith(currentUri, '/offres')} ? 'active'"
+          >
+            <span class="nav-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="7" width="18" height="13" rx="2" />
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+              </svg>
+            </span>
+            <span class="nav-label">Offres d'emploi</span>
+          </a>
         </nav>
       </th:block>
 

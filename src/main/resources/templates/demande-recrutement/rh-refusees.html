@@ -1,172 +1,268 @@
-<!DOCTYPE html>
-<html lang="fr" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<!doctype html>
+<html
+  lang="fr"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Demandes refusées · Talently</title>
-    <link rel="stylesheet" th:href="@{/css/talently.css}">
-    <link rel="stylesheet" th:href="@{/css/talently-layout.css}">
-</head>
-<body>
+    <link rel="stylesheet" th:href="@{/css/talently.css}" />
+    <link rel="stylesheet" th:href="@{/css/talently-layout.css}" />
+  </head>
+  <body>
+    <!-- ============ MENU LATÉRAL ============ -->
+    <div th:replace="~{fragments/sidebar :: sidebar(page='rh-liste')}"></div>
 
-<!-- ============ MENU LATÉRAL ============ -->
-<div th:replace="~{fragments/sidebar :: sidebar(page='rh-liste')}"></div>
-
-<!-- ============ CONTENU PRINCIPAL ============ -->
-<main class="app-main">
-    <header class="topbar">
-        <a class="brand topbar-logo" th:href="@{/demandes-recrutement/validation/rh/liste}" style="padding:0">
-            <span class="logo-mark"></span>
-            <span class="logo-text">Talent<span class="logo-accent">ly</span></span>
+    <!-- ============ CONTENU PRINCIPAL ============ -->
+    <main class="app-main">
+      <header class="topbar">
+        <a
+          class="brand topbar-logo"
+          th:href="@{/demandes-recrutement/validation/rh/liste}"
+          style="padding: 0"
+        >
+          <span class="logo-mark"></span>
+          <span class="logo-text"
+            >Talent<span class="logo-accent">ly</span></span
+          >
         </a>
         <div class="breadcrumb">
-            <span>Recrutement</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-            <strong>Gestion des demandes</strong>
+          <span>Recrutement</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+          <strong>Gestion des demandes</strong>
         </div>
         <div class="topbar-right">
-            <a class="link-button" th:href="@{/demandes-recrutement/validation/rh/refusees}">Refusées par RH</a>
-            <div class="topbar-sep"></div>
-            <div class="topbar-user">
-                <p class="user-name" th:text="${utilisateur.prenom + ' ' + utilisateur.nom}">Utilisateur</p>
-                <p class="user-role" th:text="${utilisateur.role.libelle}">Responsable RH</p>
-            </div>
-            <span class="avatar" th:text="${#strings.substring(utilisateur.prenom,0,1) + #strings.substring(utilisateur.nom,0,1)}">UT</span>
+          <a
+            class="link-button"
+            th:href="@{/demandes-recrutement/validation/rh/refusees}"
+            >Refusées par RH</a
+          >
+          <div class="topbar-sep"></div>
+          <div class="topbar-user">
+            <p
+              class="user-name"
+              th:text="${utilisateur.prenom + ' ' + utilisateur.nom}"
+            >
+              Utilisateur
+            </p>
+            <p class="user-role" th:text="${utilisateur.role.libelle}">
+              Responsable RH
+            </p>
+          </div>
+          <span
+            class="avatar"
+            th:text="${#strings.substring(utilisateur.prenom,0,1) + #strings.substring(utilisateur.nom,0,1)}"
+            >UT</span
+          >
         </div>
-    </header>
+      </header>
 
-    <div class="content">
+      <div class="content">
         <!-- Message de retour -->
-        <div th:if="${message != null}"
-             th:class="${messageType == 'success'} ? 'alert alert-success' : 'alert alert-error'"
-             th:text="${message}" role="alert"></div>
+        <div
+          th:if="${message != null}"
+          th:class="${messageType == 'success'} ? 'alert alert-success' : 'alert alert-error'"
+          th:text="${message}"
+          role="alert"
+        ></div>
 
         <!-- En-tête de page -->
         <div class="page-head">
-            <div>
-                <p class="eyebrow">Recrutement · RH</p>
-                <h1 class="page-title">Demandes refusées</h1>
-                <p class="page-subtitle">Consultez l'historique des demandes de recrutement refusées par le service RH.</p>
-            </div>
-            <div class="pending-pill">
-                <span class="dot"></span>
-                <span><span th:text="${nombreRefusees}">0</span>
-                demande<span th:if="${nombreRefusees > 1}">s</span> refusée<span th:if="${nombreRefusees > 1}">s</span></span>
-            </div>
+          <div>
+            <p class="eyebrow">Recrutement · RH</p>
+            <h1 class="page-title">Demandes refusées</h1>
+            <p class="page-subtitle">
+              Consultez l'historique des demandes de recrutement refusées par le
+              service RH.
+            </p>
+          </div>
+          <div class="pending-pill">
+            <span class="dot"></span>
+            <span
+              ><span th:text="${nombreRefusees}">0</span> demande<span
+                th:if="${nombreRefusees > 1}"
+                >s</span
+              >
+              refusée<span th:if="${nombreRefusees > 1}">s</span></span
+            >
+          </div>
         </div>
 
         <!-- Liste -->
         <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Demandes refusées</h2>
-                <p class="card-hint">Historique des besoins de recrutement refusés par le service RH.</p>
-            </div>
+          <div class="card-header">
+            <h2 class="card-title">Demandes refusées</h2>
+            <p class="card-hint">
+              Historique des besoins de recrutement refusés par le service RH.
+            </p>
+          </div>
 
-            <div th:if="${lignes == null || lignes.isEmpty()}" class="empty">
-                <span class="empty-icon">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20 6 9 17l-5-5"/>
-                    </svg>
-                </span>
-                <p class="empty-title">Aucune demande en attente</p>
-                <p class="empty-text">Toutes les lignes de recrutement ont été traitées par le service RH.</p>
-            </div>
+          <div th:if="${lignes == null || lignes.isEmpty()}" class="empty">
+            <span class="empty-icon">
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </span>
+            <p class="empty-title">Aucune demande en attente</p>
+            <p class="empty-text">
+              Toutes les lignes de recrutement ont été traitées par le service
+              RH.
+            </p>
+          </div>
 
-            <div th:unless="${lignes == null || lignes.isEmpty()}" class="table-wrap">
-                <table class="data-table">
-                    <thead>
-                    <tr>
-                        <th>Référence</th>
-                        <th>Département</th>
-                        <th>Poste à pourvoir</th>
-                        <th>Nb postes</th>
-                        <th>Demandeur</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="ligne : ${lignes}">
-                        <td>
-                            <p class="cell-main" th:text="'DEM-' + ${ligne.demandeRecrutement.id}">DEM-001</p>
-                            <p class="cell-sub" th:text="${#temporals.format(ligne.demandeRecrutement.dateCreation, 'dd/MM/yyyy HH:mm')}">01/10/2026 10:00</p>
-                        </td>
-                        <td th:text="${ligne.demandeRecrutement.departement.nom}">Informatique</td>
-                        <td>
-                            <p class="cell-main" style="font-weight:500" th:text="${ligne.poste.titre}">Développeur</p>
-                            <p class="cell-sub" th:text="${ligne.typeBesoin}">REMPLACEMENT</p>
-                        </td>
-                        <td th:text="${ligne.nombrePostes}">1</td>
-                        <td th:text="${ligne.demandeRecrutement.demandeur.prenom + ' ' + ligne.demandeRecrutement.demandeur.nom}">Demandeur</td>
-                        <td>
-                            <span class="badge badge-warning">
-                                <span class="dot"></span>
-                                <span th:text="${ligne.statutLigne.libelle}">En attente</span>
-                            </span>
-                        </td>
-                        <td>
-                            <div class="row-actions">
-                                <form th:action="@{/demandes-recrutement/validation/rh/lignes/{id}/accepter(id=${ligne.id})}" method="post">
-                                    <button type="submit" class="primary-button" title="Accepter"
-                                            onclick="return confirm('Accepter cette demande de recrutement ? Elle sera transmise à la Direction Générale.')">
-                                        ✓ Accepter
-                                    </button>
-                                </form>
-                                <button type="button" class="secondary-button" title="Refuser"
-                                        onclick="openRefuserModal(this)" th:data-ligne-id="${ligne.id}">
-                                    ✗ Refuser
-                                </button>
-                                <a class="details-link" th:href="@{/demandes-recrutement/validation/rh/lignes/{id}(id=${ligne.id})}">Détails</a>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+          <div
+            th:unless="${lignes == null || lignes.isEmpty()}"
+            class="table-wrap"
+          >
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Référence</th>
+                  <th>Département</th>
+                  <th>Poste à pourvoir</th>
+                  <th>Nb postes</th>
+                  <th>Demandeur</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="ligne : ${lignes}">
+                  <td>
+                    <p
+                      class="cell-main"
+                      th:text="'DEM-' + ${ligne.demandeRecrutement.id}"
+                    >
+                      DEM-001
+                    </p>
+                    <p
+                      class="cell-sub"
+                      th:text="${#temporals.format(ligne.demandeRecrutement.dateCreation, 'dd/MM/yyyy HH:mm')}"
+                    >
+                      01/10/2026 10:00
+                    </p>
+                  </td>
+                  <td th:text="${ligne.demandeRecrutement.departement.nom}">
+                    Informatique
+                  </td>
+                  <td>
+                    <p
+                      class="cell-main"
+                      style="font-weight: 500"
+                      th:text="${ligne.poste.titre}"
+                    >
+                      Développeur
+                    </p>
+                    <p class="cell-sub" th:text="${ligne.typeBesoin}">
+                      REMPLACEMENT
+                    </p>
+                  </td>
+                  <td th:text="${ligne.nombrePostes}">1</td>
+                  <td
+                    th:text="${ligne.demandeRecrutement.demandeur.prenom + ' ' + ligne.demandeRecrutement.demandeur.nom}"
+                  >
+                    Demandeur
+                  </td>
+                  <td>
+                    <span class="badge badge-warning">
+                      <span class="dot"></span>
+                      <span th:text="${ligne.statutLigne.libelle}"
+                        >En attente</span
+                      >
+                    </span>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <form
+                        th:action="@{/demandes-recrutement/validation/lignes/{id}/accepter(id=${ligne.id})}"
+                        method="post"
+                      >
+                        <input
+                          type="hidden"
+                          th:name="${_csrf.parameterName}"
+                          th:value="${_csrf.token}"
+                        />
+                        <input type="hidden" name="retour" value="liste" />
+
+                        <button
+                          sec:authorize="hasRole('RH')"
+                          type="submit"
+                          class="primary-button"
+                          title="Accepter"
+                          onclick="
+                            return confirm(
+                              'Accepter cette demande de recrutement ? Elle sera transmise à la Direction Générale.',
+                            );
+                          "
+                        >
+                          ✓ Accepter
+                        </button>
+                        <button
+                          sec:authorize="hasRole('DG')"
+                          type="submit"
+                          class="primary-button"
+                          title="Valider"
+                          onclick="
+                            return confirm(
+                              'Valider cette demande, même si elle a été refusée précédemment ?',
+                            );
+                          "
+                        >
+                          ✓ Valider
+                        </button>
+                      </form>
+                      <button
+                        type="button"
+                        class="secondary-button"
+                        title="Refuser"
+                        onclick="openRefuserModal(this)"
+                        th:data-ligne-id="${ligne.id}"
+                      >
+                        ✗ Refuser
+                      </button>
+                      <a
+                        class="details-link"
+                        th:href="@{/demandes-recrutement/validation/rh/lignes/{id}(id=${ligne.id})}"
+                        >Détails</a
+                      >
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
+    </main>
+
+    <!-- ============ MODAL DE REFUS ============ -->
+    <div th:replace="~{fragments/refuser-modal :: refuserModal('refusees')}"></div>
     </div>
-</main>
+    <script th:src="@{/js/refuser-modal.js}"></script>
 
-<!-- ============ MODAL DE REFUS ============ -->
-<div id="refuser-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="refuser-title">
-    <div class="modal">
-        <div class="modal-header">
-            <h2 id="refuser-title" class="modal-title">Refuser la demande</h2>
-            <p class="modal-sub">Un commentaire explicatif est obligatoire.</p>
-        </div>
-        <form id="refuser-form" th:action="@{/demandes-recrutement/validation/rh/lignes/0/refuser}" method="post" class="modal-body">
-            <label class="label" for="commentaire">Commentaire du refus <span class="required">*</span></label>
-            <textarea id="commentaire" name="commentaire" rows="4" class="field" placeholder="Expliquez le motif du refus..." required></textarea>
-            <div class="modal-actions">
-                <button type="button" class="secondary-button" onclick="closeRefuserModal()">Annuler</button>
-                <button type="submit" class="primary-button">Confirmer le refus</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script th:inline="javascript">
-    const refuserBase = /*[[@{/demandes-recrutement/validation/rh/lignes/}]]*/ "/demandes-recrutement/validation/rh/lignes/";
-
-    function openRefuserModal(btn) {
-        const id = btn.getAttribute("data-ligne-id");
-        document.getElementById("refuser-form").action = refuserBase + id + "/refuser";
-        document.getElementById("refuser-modal").classList.remove("hidden");
-        document.getElementById("commentaire").focus();
-    }
-
-    function closeRefuserModal() {
-        document.getElementById("refuser-modal").classList.add("hidden");
-    }
-
-    document.getElementById("refuser-modal").addEventListener("click", (e) => {
-        if (e.target.id === "refuser-modal") closeRefuserModal();
-    });
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeRefuserModal();
-    });
-</script>
-
-</body>
+  </body>
 </html>

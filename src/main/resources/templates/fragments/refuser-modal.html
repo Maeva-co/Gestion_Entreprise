@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <!--
+      Modal de refus partagé (RH et DG).
+      Appel :
+        <div th:replace="~{fragments/refuser-modal :: refuserModal('liste')}"></div>
+        <div th:replace="~{fragments/refuser-modal :: refuserModal('refusees')}"></div>
+      Le paramètre `retour` indique la page où revenir après l'action.
+      Le JS (openRefuserModal / closeRefuserModal) est dans static/js/refuser-modal.js.
+    -->
+    <div
+      th:fragment="refuserModal(retour)"
+      id="refuser-modal"
+      class="modal-backdrop hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="refuser-title"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h2 id="refuser-title" class="modal-title">Refuser la demande</h2>
+          <p class="modal-sub">Un commentaire explicatif est obligatoire.</p>
+        </div>
+
+        <!-- th:action ajoute automatiquement le champ CSRF.
+             L'id de la ligne est inséré dans l'action par le JS. -->
+        <form
+          id="refuser-form"
+          class="modal-body"
+          method="post"
+          th:action="@{/demandes-recrutement/validation/lignes/0/refuser}"
+          th:data-base="@{/demandes-recrutement/validation/lignes/}"
+        >
+          <input type="hidden" name="retour" th:value="${retour}" />
+
+          <div>
+            <label class="label" for="refuser-commentaire"
+              >Commentaire du refus <span class="required">*</span></label
+            >
+            <textarea
+              id="refuser-commentaire"
+              name="commentaire"
+              rows="4"
+              class="field"
+              placeholder="Expliquez le motif du refus..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="secondary-button"
+              onclick="closeRefuserModal()"
+            >
+              Annuler
+            </button>
+            <button type="submit" class="primary-button">
+              Confirmer le refus
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Accès refusé — Talently</title>
+    <!-- Adaptez le chemin si votre fichier CSS porte un autre nom -->
+    <link rel="stylesheet" th:href="@{/css/talently.css}">
+</head>
+<body>
+
+<main class="login-page">
+    <div class="login-card denied">
+
+        <div class="login-brand">
+            <div class="logo-mark"></div>
+            <span class="logo-text">talent<span class="logo-accent">ly</span></span>
+        </div>
+
+        <span class="empty-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+            </svg>
+        </span>
+
+        <p class="login-eyebrow">Accès refusé</p>
+        <h1 class="login-title">Vous n'avez pas les droits</h1>
+        <p class="login-subtitle">
+            Votre rôle ne vous permet pas d'accéder à cette page.
+            Si vous pensez qu'il s'agit d'une erreur, contactez l'administrateur.
+        </p>
+
+        <div class="denied-actions">
+            <a class="primary-button" th:href="@{${accueilUrl}}">Retour à mon espace</a>
+            <a class="secondary-button" th:href="@{/deconnexion}">Se déconnecter</a>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>
