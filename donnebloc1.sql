@@ -142,3 +142,5 @@ INSERT INTO historique_validation_ligne
 
 COMMIT;
 
+
+

@@ -1,0 +1,327 @@
+<!doctype html>
+<html
+  lang="fr"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suivi des demandes de recrutement</title>
+    <link rel="stylesheet" th:href="@{/css/talently.css}" />
+    <style>
+      /* ---------- Onglets de filtre ---------- */
+      .suivi-tabs {
+        display: flex;
+        gap: 4px;
+        padding: 16px 20px;
+        overflow-x: auto;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .suivi-tab {
+        white-space: nowrap;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-decoration: none;
+        transition: background 0.15s ease;
+      }
+      .suivi-tab:hover {
+        background: #f8fafc;
+      }
+      .suivi-tab.active {
+        background: #eeedff;
+        color: #4f46e5;
+      }
+
+      /* ---------- Manager (avatar + nom) ---------- */
+      .suivi-manager {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .suivi-avatar {
+        display: inline-grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .suivi-av-0 {
+        background: #ffe4e6;
+        color: #be123c;
+      }
+      .suivi-av-1 {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .suivi-av-2 {
+        background: #e0e7ff;
+        color: #4338ca;
+      }
+      .suivi-av-3 {
+        background: #d1fae5;
+        color: #047857;
+      }
+
+      /* ---------- Pastille de statut ---------- */
+      .suivi-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .suivi-pill::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+      .suivi-amber {
+        background: #fffbeb;
+        color: #b45309;
+        box-shadow: inset 0 0 0 1px #fde68a;
+      }
+      .suivi-violet {
+        background: #f5f3ff;
+        color: #6d28d9;
+        box-shadow: inset 0 0 0 1px #ddd6fe;
+      }
+      .suivi-emerald {
+        background: #ecfdf5;
+        color: #047857;
+        box-shadow: inset 0 0 0 1px #a7f3d0;
+      }
+      .suivi-rose {
+        background: #fff1f2;
+        color: #be123c;
+        box-shadow: inset 0 0 0 1px #fecdd3;
+      }
+
+      /* ---------- Bouton Ouvrir ---------- */
+      .suivi-open {
+        display: inline-block;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 6px 10px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #475569;
+        text-decoration: none;
+      }
+      .suivi-open:hover {
+        border-color: #c7d2fe;
+        color: #4f46e5;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============ MENU LATÉRAL ============ -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- ============ CONTENU PRINCIPAL ============ -->
+    <main class="app-main">
+      <header class="topbar">
+        <a
+          class="brand topbar-logo"
+          th:href="@{/demandes-recrutement/suivi}"
+          style="padding: 0"
+        >
+          <span class="logo-mark"></span>
+          <span class="logo-text"
+            >Talent<span class="logo-accent">ly</span></span
+          >
+        </a>
+        <div class="breadcrumb">
+          <span>Recrutement</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+          <strong>Suivi des demandes</strong>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-user">
+            <p
+              class="user-name"
+              th:text="${utilisateur.prenom + ' ' + utilisateur.nom}"
+            >
+              Utilisateur
+            </p>
+            <p class="user-role" th:text="${utilisateur.role.libelle}">
+              Directeur Général
+            </p>
+          </div>
+          <span
+            class="avatar"
+            th:text="${#strings.substring(utilisateur.prenom,0,1) + #strings.substring(utilisateur.nom,0,1)}"
+            >UT</span
+          >
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- En-tête de page -->
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Recrutement</p>
+            <h1 class="page-title">Suivi des demandes de recrutement</h1>
+            <p class="page-subtitle">
+              Suivez chaque besoin avec son département, son manager et son
+              avancement dans le circuit de validation.
+            </p>
+          </div>
+          <div class="pending-pill">
+            <span class="dot"></span>
+            <span>
+              <span th:text="${total}">0</span>
+              ligne<span th:text="${total} > 1 ? 's' : ''">s</span> de
+              recrutement
+            </span>
+          </div>
+        </div>
+
+        <div class="card">
+          <!-- Onglets : filtre par avancement, avec compteurs -->
+          <div class="suivi-tabs">
+            <a
+              class="suivi-tab"
+              th:href="@{/demandes-recrutement/suivi}"
+              th:classappend="${statutActif == null} ? 'active'"
+            >
+              Toutes (<span th:text="${total}">0</span>)
+            </a>
+            <a
+              th:each="f : ${filtres}"
+              class="suivi-tab"
+              th:href="@{/demandes-recrutement/suivi(statut=${f.key})}"
+              th:classappend="${statutActif == f.key} ? 'active'"
+            >
+              <span th:text="${f.value}">À valider RH</span>
+              (<span th:text="${compteurs.get(f.key)}">0</span>)
+            </a>
+          </div>
+
+          <!-- État vide -->
+          <div th:if="${lignes == null || lignes.isEmpty()}" class="empty">
+            <span class="empty-icon">
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6M8 13h8M8 17h5" />
+              </svg>
+            </span>
+            <p class="empty-title">Aucune demande</p>
+            <p
+              class="empty-text"
+              th:text="${statutActif != null} ? 'Aucune demande à cette étape pour le moment.' : 'Aucune demande de recrutement n\'a encore été créée.'"
+            >
+              Aucune demande de recrutement n'a encore été créée.
+            </p>
+          </div>
+
+          <!-- Tableau -->
+          <div
+            th:unless="${lignes == null || lignes.isEmpty()}"
+            class="table-wrap"
+          >
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Demande</th>
+                  <th>Département</th>
+                  <th>Manager</th>
+                  <th>Date</th>
+                  <th>Statut</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  th:each="l : ${lignes}"
+                  th:with="d=${l.ligne.demandeRecrutement}"
+                >
+                  <td>
+                    <p class="cell-main" th:text="${l.ligne.poste.titre}">
+                      Product Designer Senior
+                    </p>
+                    <p
+                      class="cell-sub"
+                      th:text="'DEM-' + ${d.id} + ' · ' + ${l.ligne.typeBesoin} + ' · ' + ${l.ligne.nombrePostes} + (${l.ligne.nombrePostes} > 1 ? ' postes' : ' poste')"
+                    >
+                      DEM-001 · REMPLACEMENT · 1 poste
+                    </p>
+                  </td>
+                  <td th:text="${d.departement.nom}">Informatique</td>
+                  <td>
+                    <div class="suivi-manager" th:if="${d.demandeur != null}">
+                      <span
+                        class="suivi-avatar"
+                        th:classappend="'suivi-av-' + (${d.demandeur.id} % 4)"
+                        th:text="${#strings.toUpperCase(#strings.substring(d.demandeur.prenom,0,1) + #strings.substring(d.demandeur.nom,0,1))}"
+                        >SB</span
+                      >
+                      <span
+                        th:text="${d.demandeur.prenom + ' ' + d.demandeur.nom}"
+                        >Sofia Benali</span
+                      >
+                    </div>
+                    <span th:if="${d.demandeur == null}">—</span>
+                  </td>
+                  <td
+                    th:text="${#temporals.format(d.dateCreation, 'dd/MM/yyyy')}"
+                  >
+                    28/05/2026
+                  </td>
+                  <td>
+                    <span
+                      class="suivi-pill"
+                      th:classappend="'suivi-' + ${l.statut.couleur}"
+                      th:text="${l.statut.libelle}"
+                      >À valider DG</span
+                    >
+                  </td>
+                  <td>
+                    <a
+                      class="suivi-open"
+                      th:href="@{/demandes-recrutement/validation/rh/lignes/{id}(id=${l.ligne.id})}"
+                      >Ouvrir</a
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

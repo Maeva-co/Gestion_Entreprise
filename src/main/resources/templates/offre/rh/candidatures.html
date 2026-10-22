@@ -1,0 +1,230 @@
+<!doctype html>
+<html
+  lang="fr"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidatures — RH</title>
+    <link rel="stylesheet" th:href="@{/css/talently.css}" />
+  </head>
+  <body>
+    <!-- ============ MENU LATÉRAL ============ -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- ============ CONTENU PRINCIPAL ============ -->
+    <main class="app-main">
+      <header class="topbar">
+        <a
+          class="brand topbar-logo"
+          th:href="@{/demandes-recrutement/validation/rh/liste}"
+          style="padding: 0"
+        >
+          <span class="logo-mark"></span>
+          <span class="logo-text"
+            >Talent<span class="logo-accent">ly</span></span
+          >
+        </a>
+        <div class="breadcrumb">
+          <span>Recrutement</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+          <a th:href="@{/offres}">Offres d'emploi</a>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+          <strong>Candidatures</strong>
+        </div>
+        <div class="topbar-right">
+          <a class="link-button" th:href="@{/offres}">Retour aux offres</a>
+          <div class="topbar-sep"></div>
+          <div class="topbar-user">
+            <p
+              class="user-name"
+              th:text="${utilisateur.prenom + ' ' + utilisateur.nom}"
+            >
+              Utilisateur
+            </p>
+            <p class="user-role" th:text="${utilisateur.role.libelle}">
+              Responsable RH
+            </p>
+          </div>
+          <span
+            class="avatar"
+            th:text="${#strings.substring(utilisateur.prenom,0,1) + #strings.substring(utilisateur.nom,0,1)}"
+            >UT</span
+          >
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- En-tête de page -->
+        <div class="page-head">
+          <div>
+            <p class="eyebrow">Offres d'emploi · Candidatures</p>
+            <h1 class="page-title" th:text="${offre.titreOffre}">Développeur</h1>
+            <p class="page-subtitle">
+              <span th:text="'OFF-' + ${offre.id}">OFF-001</span>
+              ·
+              <span th:text="${offre.statutOffre.libelle}">Publiée</span>
+            </p>
+          </div>
+          <div class="pending-pill">
+            <span class="dot"></span>
+            <span>
+              <span th:text="${totalCandidatures}">0</span>
+              candidature<span th:text="${totalCandidatures} > 1 ? 's' : ''"
+                >s</span
+              >
+              reçue<span th:text="${totalCandidatures} > 1 ? 's' : ''">s</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Liste des candidatures -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Candidats ayant postulé</h2>
+            <p class="card-hint">
+              Filtrez les candidatures selon leur avancement dans le processus
+              de recrutement.
+            </p>
+
+            <!-- Filtres par statut du pipeline, avec compteurs -->
+            <div class="row-actions" style="margin-top: 12px">
+              <a
+                th:href="@{/offres/{id}/candidatures(id=${offre.id})}"
+                th:class="${statutActif == null} ? 'primary-button' : 'secondary-button'"
+              >
+                Toutes (<span th:text="${totalCandidatures}">0</span>)
+              </a>
+              <a
+                th:each="s : ${statuts}"
+                th:href="@{/offres/{id}/candidatures(id=${offre.id}, statut=${s.code})}"
+                th:class="${statutActif == s.code} ? 'primary-button' : 'secondary-button'"
+              >
+                <span th:text="${s.libelle}">Reçue</span>
+                (<span th:text="${compteurs.get(s.code)}">0</span>)
+              </a>
+            </div>
+          </div>
+
+          <!-- État vide -->
+          <div
+            th:if="${candidatures == null || candidatures.isEmpty()}"
+            class="empty"
+          >
+            <span class="empty-icon">
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="9" cy="8" r="3.5" />
+                <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+                <path d="M17 11h5M19.5 8.5v5" />
+              </svg>
+            </span>
+            <p class="empty-title">Aucune candidature</p>
+            <p
+              class="empty-text"
+              th:text="${statutActif != null} ? 'Aucune candidature avec ce statut pour cette offre.' : 'Personne n\'a encore postulé à cette offre.'"
+            >
+              Personne n'a encore postulé à cette offre.
+            </p>
+          </div>
+
+          <!-- Tableau -->
+          <div
+            th:unless="${candidatures == null || candidatures.isEmpty()}"
+            class="table-wrap"
+          >
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Candidat</th>
+                  <th>Téléphone</th>
+                  <th>Expérience</th>
+                  <th>Dernier diplôme</th>
+                  <th>Prétention salariale</th>
+                  <th>Postulé le</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="c : ${candidatures}">
+                  <td>
+                    <p
+                      class="cell-main"
+                      th:text="${c.candidat.prenom + ' ' + c.candidat.nom}"
+                    >
+                      Jean Rakoto
+                    </p>
+                    <p class="cell-sub" th:text="${c.candidat.email}">
+                      jean@exemple.com
+                    </p>
+                  </td>
+                  <td th:text="${c.candidat.telephone} ?: '—'">—</td>
+                  <td
+                    th:text="${c.anneeExperience} + (${c.anneeExperience} > 1 ? ' ans' : ' an')"
+                  >
+                    3 ans
+                  </td>
+                  <td th:text="${c.dernierDiplome}">Licence</td>
+                  <td
+                    th:text="${c.pretentionSalariale != null} ? ${#numbers.formatDecimal(c.pretentionSalariale, 0, 'WHITESPACE', 0, 'POINT')} : '—'"
+                  >
+                    1 200 000
+                  </td>
+                  <td
+                    th:text="${#temporals.format(c.dateCandidature, 'dd/MM/yyyy HH:mm')}"
+                  >
+                    01/10/2026 09:00
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      th:classappend="${c.statutCandidature.code == 'EMBAUCHE'} ? 'badge-success' : (${c.statutCandidature.code == 'RECUE'} ? 'badge-warning' : 'badge-neutral')"
+                    >
+                      <span class="dot"></span>
+                      <span th:text="${c.statutCandidature.libelle}">Reçue</span>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

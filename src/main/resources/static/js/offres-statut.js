@@ -1,6 +1,9 @@
 /**
  * Changement de statut d'une offre depuis la liste (modal + fetch, sans rechargement).
  * Fichier : src/main/resources/static/js/offres-statut.js
+ *
+ * Le modal reprend le design du modal de refus : un .modal-backdrop affiché ou
+ * masqué avec la classe "hidden".
  */
 (function () {
   "use strict";
@@ -11,10 +14,9 @@
     SUSPENDUE: "Suspendue",
     CLOTUREE: "Clôturée",
   };
-  var CLASSES_BADGE = ["badge-success", "badge-warning", "badge-neutral"];
 
-  var dialog = document.getElementById("statutModal");
-  if (!dialog) return;
+  var modal = document.getElementById("statutModal");
+  if (!modal) return;
 
   var form = document.getElementById("statutForm");
   var select = document.getElementById("statutSelect");
@@ -23,15 +25,9 @@
   var note = document.getElementById("statutNote");
   var erreur = document.getElementById("statutErreur");
   var bouton = document.getElementById("statutConfirmer");
-  var carte = document.getElementById("offresCard");
+  var conteneur = document.getElementById("offresCard");
 
   var offreId = null;
-
-  function classeBadge(code) {
-    if (code === "PUBLIEE") return "badge-success";
-    if (code === "BROUILLON") return "badge-warning";
-    return "badge-neutral";
-  }
 
   function entetes() {
     var h = {
@@ -67,12 +63,15 @@
     erreur.textContent = "";
     bouton.disabled = false;
     majNote();
-    dialog.showModal();
+    modal.classList.remove("hidden");
+    select.focus();
+  }
+
+  function fermer() {
+    modal.classList.add("hidden");
   }
 
   function appliquer(data) {
-    var ligne = document.querySelector('tr[data-offre-id="' + offreId + '"]');
-
     // Compteurs des filtres (valeurs du serveur).
     Object.keys(data.compteurs).forEach(function (code) {
       document
@@ -82,37 +81,49 @@
         });
     });
 
-    if (!ligne) return;
+    var carte = document.querySelector(
+      'article.offre-card[data-offre-id="' + offreId + '"]'
+    );
+    if (!carte) return;
 
     // Filtre actif : l'offre n'appartient plus à cette liste.
-    var actif = carte ? carte.dataset.statutActif : "";
+    var actif = conteneur ? conteneur.dataset.statutActif : "";
     if (actif && actif !== data.statut) {
-      var corps = ligne.parentNode;
-      ligne.remove();
-      if (!corps.querySelector("tr")) window.location.reload();
+      var grille = carte.parentNode;
+      carte.remove();
+      if (!grille.querySelector(".offre-card")) window.location.reload();
       return;
     }
 
-    var badge = ligne.querySelector('[data-role="badge"]');
-    CLASSES_BADGE.forEach(function (c) {
-      badge.classList.remove(c);
-    });
-    badge.classList.add(classeBadge(data.statut));
-    ligne.querySelector('[data-role="statut-libelle"]').textContent =
+    carte.querySelector('[data-role="badge"]').className =
+      "offre-pill pill-" + data.statut;
+    carte.querySelector('[data-role="statut-libelle"]').textContent =
       data.libelle;
-    ligne.querySelector('[data-role="date-publication"]').textContent =
+    carte.querySelector('[data-role="date-publication"]').textContent =
       data.datePublication || "—";
 
-    var btn = ligne.querySelector(".js-statut-btn");
+    var btn = carte.querySelector(".js-statut-btn");
     btn.dataset.statut = data.statut;
     btn.dataset.transitions = data.transitions.join(",");
     btn.hidden = data.transitions.length === 0;
+
+    // Les candidatures n'existent qu'une fois l'offre publiée.
+    var lien = carte.querySelector(".js-candidatures-link");
+    if (lien) lien.hidden = data.statut === "BROUILLON";
   }
 
   document.addEventListener("click", function (e) {
     var btn = e.target.closest(".js-statut-btn");
     if (btn) ouvrir(btn);
-    if (e.target.closest("[data-close-statut]")) dialog.close();
+    if (e.target.closest("[data-close-statut]")) fermer();
+  });
+
+  // Clic sur le fond sombre ou touche Échap : fermeture.
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) fermer();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) fermer();
   });
 
   select.addEventListener("change", majNote);
@@ -142,7 +153,7 @@
           return;
         }
         appliquer(res.data);
-        dialog.close();
+        fermer();
       })
       .catch(function () {
         erreur.textContent =

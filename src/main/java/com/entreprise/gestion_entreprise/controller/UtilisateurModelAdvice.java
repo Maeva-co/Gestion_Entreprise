@@ -1,14 +1,18 @@
 package com.entreprise.gestion_entreprise.controller;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import com.entreprise.gestion_entreprise.dto.LigneSuivi;
+import com.entreprise.gestion_entreprise.dto.StatutSuivi;
 import com.entreprise.gestion_entreprise.model.Utilisateur;
 import com.entreprise.gestion_entreprise.repository.UtilisateurRepository;
 import com.entreprise.gestion_entreprise.service.ValidationLigneService;
-
+import org.springframework.ui.Model;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -17,10 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * Si une autre page utilise le fragment sidebar, ajouter son contrôleur
  * dans assignableTypes.
  */
-@ControllerAdvice(assignableTypes = {
-        ValidationLigneController.class,
-        DemandeRecrutementController.class,
-        OffreController.class })
+@ControllerAdvice(basePackages = "com.entreprise.gestion_entreprise.controller")
 public class UtilisateurModelAdvice {
 
     private final UtilisateurRepository utilisateurRepository;
@@ -59,4 +60,22 @@ public class UtilisateurModelAdvice {
     public long nombreRefusees() {
         return validationService.compterRefuseesRH();
     }
+
+        @ModelAttribute
+    public void compteursMenu(Model model) {
+        Map<String, Long> enAttente = new HashMap<>();
+        Map<String, Long> refusees = new HashMap<>();
+ 
+        for (LigneSuivi ligne : validationService.getSuiviLignes()) {
+            StatutSuivi statut = ligne.getStatut();
+            if (statut.getType() == StatutSuivi.Type.A_VALIDER) {
+                enAttente.merge(statut.getEtapeCode(), 1L, Long::sum);
+            } else if (statut.estRefusee()) {
+                refusees.merge(statut.getEtapeCode(), 1L, Long::sum);
+            }
+        }
+        model.addAttribute("enAttenteParEtape", enAttente);
+        model.addAttribute("refuseesParEtape", refusees);
+    }
+
 }

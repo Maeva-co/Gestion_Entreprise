@@ -1,5 +1,6 @@
 package com.entreprise.gestion_entreprise.controller;
 
+import com.entreprise.gestion_entreprise.dto.StatutSuivi;
 import com.entreprise.gestion_entreprise.exception.RegleGestionException;
 import com.entreprise.gestion_entreprise.model.HistoriqueValidationLigne;
 import com.entreprise.gestion_entreprise.model.LigneDemandeRecrutement;
@@ -40,37 +41,37 @@ public class ValidationLigneController {
         return "demande-recrutement/ligne-details";
     }
 
-    @PostMapping("/rh/lignes/{id}/accepter")
-    public String accepterLigneRH(@PathVariable Integer id,
-            @RequestParam(value = "commentaire", required = false) String commentaire,
-            Model model,
-            @ModelAttribute(value = "utilisateur", binding = false) Utilisateur utilisateur) {
-        try {
-            validationService.accepterLigneRH(id, commentaire, utilisateur);
-            model.addAttribute("message", "La demande a été acceptée et transmise à la Direction Générale.");
-            model.addAttribute("messageType", "success");
-        } catch (RegleGestionException e) {
-            model.addAttribute("message", e.getMessage());
-            model.addAttribute("messageType", "error");
-        }
-        return viewListeRH(model);
-    }
+    // @PostMapping("/rh/lignes/{id}/accepter")
+    // public String accepterLigneRH(@PathVariable Integer id,
+    //         @RequestParam(value = "commentaire", required = false) String commentaire,
+    //         Model model,
+    //         @ModelAttribute(value = "utilisateur", binding = false) Utilisateur utilisateur) {
+    //     try {
+    //         validationService.accepterLigneRH(id, commentaire, utilisateur);
+    //         model.addAttribute("message", "La demande a été acceptée et transmise à la Direction Générale.");
+    //         model.addAttribute("messageType", "success");
+    //     } catch (RegleGestionException e) {
+    //         model.addAttribute("message", e.getMessage());
+    //         model.addAttribute("messageType", "error");
+    //     }
+    //     return viewListeRH(model);
+    // }
 
-    @PostMapping("/rh/lignes/{id}/refuser")
-    public String refuserLigneRH(@PathVariable Integer id,
-            @RequestParam("commentaire") String commentaire,
-            Model model,
-            @ModelAttribute(value = "utilisateur", binding = false) Utilisateur utilisateur) {
-        try {
-            validationService.refuserLigneRH(id, commentaire, utilisateur);
-            model.addAttribute("message", "La demande a été refusée.");
-            model.addAttribute("messageType", "success");
-        } catch (RegleGestionException e) {
-            model.addAttribute("message", e.getMessage());
-            model.addAttribute("messageType", "error");
-        }
-        return viewListeRH(model);
-    }
+    // @PostMapping("/rh/lignes/{id}/refuser")
+    // public String refuserLigneRH(@PathVariable Integer id,
+    //         @RequestParam("commentaire") String commentaire,
+    //         Model model,
+    //         @ModelAttribute(value = "utilisateur", binding = false) Utilisateur utilisateur) {
+    //     try {
+    //         validationService.refuserLigneRH(id, commentaire, utilisateur);
+    //         model.addAttribute("message", "La demande a été refusée.");
+    //         model.addAttribute("messageType", "success");
+    //     } catch (RegleGestionException e) {
+    //         model.addAttribute("message", e.getMessage());
+    //         model.addAttribute("messageType", "error");
+    //     }
+    //     return viewListeRH(model);
+    // }
 
     @GetMapping("/rh/refusees")
     public String listeRefuseesRH(Model model) {
@@ -101,12 +102,8 @@ public class ValidationLigneController {
             RedirectAttributes redirectAttributes,
             @ModelAttribute(value = "utilisateur", binding = false) Utilisateur utilisateur) {
         try {
-            validationService.accepterLigne(id, commentaire, utilisateur);
-            boolean dg = utilisateur != null && utilisateur.getRole() != null
-                    && "DG".equals(utilisateur.getRole().getCode());
-            redirectAttributes.addFlashAttribute("message", dg
-                    ? "La demande a été validée par la Direction Générale."
-                    : "La demande a été acceptée et transmise à la Direction Générale.");
+            StatutSuivi etat = validationService.accepterLigne(id, commentaire, utilisateur);
+            redirectAttributes.addFlashAttribute("message", messageApresAcceptation(etat));
             redirectAttributes.addFlashAttribute("messageType", "success");
         } catch (RegleGestionException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
@@ -148,11 +145,18 @@ public class ValidationLigneController {
         return "demande-recrutement/rh-liste";
     }
 
+    private static final String ETAPE_DG = "DG";
+
     private String viewListeDG(Model model) {
-        List<LigneDemandeRecrutement> lignes = validationService.getLignesApprouveesParRHEnAttenteDG();
+        List<LigneDemandeRecrutement> lignes = validationService.getLignesEnAttente(ETAPE_DG);
         model.addAttribute("lignes", lignes);
         model.addAttribute("nombreEnAttente", lignes.size());
-        model.addAttribute("page", "dg-liste");
         return "demande-recrutement/dg-liste";
+    }
+
+    private String messageApresAcceptation(StatutSuivi etat) {
+        return etat.getType() == StatutSuivi.Type.VALIDEE
+                ? "La demande est validée à toutes les étapes : elle devient une offre d'emploi."
+                : "La demande a été acceptée et transmise à l'étape « " + etat.getEtapeLibelle() + " ».";
     }
 }

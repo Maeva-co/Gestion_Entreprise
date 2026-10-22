@@ -19,39 +19,145 @@
       [hidden] {
         display: none !important;
       }
-      .statut-dialog {
-        border: none;
-        border-radius: 12px;
-        padding: 24px;
-        width: calc(100% - 32px);
-        max-width: 420px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+      .modal-backdrop.hidden {
+        display: none;
       }
-      .statut-dialog::backdrop {
-        background: rgba(15, 23, 42, 0.45);
-      }
-      .statut-dialog h2 {
-        margin: 0 0 4px;
-      }
-      .statut-dialog label {
-        display: block;
-        font-weight: 600;
-        margin: 16px 0 6px;
-      }
-      .statut-dialog select {
+      .modal select.field {
         width: 100%;
-        padding: 8px 10px;
-      }
-      .statut-dialog .modal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        margin-top: 20px;
       }
       .statut-error {
         color: #b42318;
         margin: 10px 0 0;
         min-height: 1em;
+        font-size: 12px;
+      }
+
+      /* ---------- Filtres alignés horizontalement ---------- */
+      .offres-filtres {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 20px;
+      }
+      .offres-filtres > a {
+        display: inline-flex;
+        align-items: center;
+        width: auto;
+        white-space: nowrap;
+      }
+
+      /* ---------- Cartes d'offres ---------- */
+      .offres-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+      }
+      .offre-card {
+        display: flex;
+        flex-direction: column;
+        min-height: 245px;
+        padding: 20px;
+        background: #fff;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .offre-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      }
+      .offre-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+      }
+      .offre-icon {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: #eef2ff;
+        color: #5b55ed;
+      }
+      .offre-pill {
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 10px;
+        font-weight: 700;
+      }
+      .pill-PUBLIEE {
+        background: #ecfdf5;
+        color: #047857;
+      }
+      .pill-BROUILLON {
+        background: #f1f5f9;
+        color: #64748b;
+      }
+      .pill-SUSPENDUE {
+        background: #fffbeb;
+        color: #b45309;
+      }
+      .pill-CLOTUREE {
+        background: #fff1f2;
+        color: #be123c;
+      }
+      .offre-body {
+        margin-top: 20px;
+      }
+      .offre-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        color: #1e293b;
+      }
+      .offre-dept {
+        margin: 4px 0 0;
+        font-size: 11px;
+        font-weight: 500;
+        color: #5b55ed;
+      }
+      .offre-desc {
+        margin: 12px 0 0;
+        font-size: 11px;
+        line-height: 1.7;
+        color: #64748b;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .offre-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin: 12px 0 16px;
+        padding: 0;
+        list-style: none;
+        font-size: 10px;
+        color: #94a3b8;
+      }
+      .offre-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid #f1f5f9;
+      }
+      .offre-link {
+        font-size: 11px;
+        font-weight: 700;
+        color: #5b55ed;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+      .offre-footer .secondary-button {
+        width: auto;
+        white-space: nowrap;
       }
     </style>
   </head>
@@ -116,6 +222,14 @@
       </header>
 
       <div class="content">
+        <!-- Message de retour -->
+        <div
+          th:if="${message != null}"
+          th:class="${messageType} == 'success' ? 'alert success' : 'alert error'"
+          th:text="${message}"
+          role="alert"
+        ></div>
+
         <!-- En-tête de page -->
         <div class="page-head">
           <div>
@@ -136,229 +250,262 @@
           </div>
         </div>
 
-        <!-- Liste des offres -->
-        <div
-          class="card"
-          id="offresCard"
-          th:data-statut-actif="${statutActif} ?: ''"
-        >
-          <div class="card-header">
-            <h2 class="card-title">Toutes les offres</h2>
-            <p class="card-hint">
-              Filtrez les offres par statut. Chaque offre est liée à la demande
-              de recrutement dont elle est issue.
-            </p>
-
-            <!-- Filtres par statut, avec compteurs -->
-            <div class="row-actions" style="margin-top: 12px">
-              <a
-                th:href="@{/offres}"
-                th:class="${statutActif == null} ? 'primary-button' : 'secondary-button'"
-              >
-                Toutes (<span th:text="${totalOffres}">0</span>)
-              </a>
-              <a
-                th:href="@{/offres(statut='BROUILLON')}"
-                th:class="${statutActif == 'BROUILLON'} ? 'primary-button' : 'secondary-button'"
-              >
-                Brouillons (<span
-                  data-compteur="BROUILLON"
-                  th:text="${compteurs['BROUILLON']}"
-                  >0</span
-                >)
-              </a>
-              <a
-                th:href="@{/offres(statut='PUBLIEE')}"
-                th:class="${statutActif == 'PUBLIEE'} ? 'primary-button' : 'secondary-button'"
-              >
-                Publiées (<span
-                  data-compteur="PUBLIEE"
-                  th:text="${compteurs['PUBLIEE']}"
-                  >0</span
-                >)
-              </a>
-              <a
-                th:href="@{/offres(statut='SUSPENDUE')}"
-                th:class="${statutActif == 'SUSPENDUE'} ? 'primary-button' : 'secondary-button'"
-              >
-                Suspendues (<span
-                  data-compteur="SUSPENDUE"
-                  th:text="${compteurs['SUSPENDUE']}"
-                  >0</span
-                >)
-              </a>
-              <a
-                th:href="@{/offres(statut='CLOTUREE')}"
-                th:class="${statutActif == 'CLOTUREE'} ? 'primary-button' : 'secondary-button'"
-              >
-                Clôturées (<span
-                  data-compteur="CLOTUREE"
-                  th:text="${compteurs['CLOTUREE']}"
-                  >0</span
-                >)
-              </a>
-            </div>
+        <div id="offresCard" th:data-statut-actif="${statutActif} ?: ''">
+          <!-- Filtres par statut, avec compteurs -->
+          <div class="offres-filtres">
+            <a
+              th:href="@{/offres}"
+              th:class="${statutActif == null} ? 'primary-button' : 'secondary-button'"
+            >
+              Toutes (<span th:text="${totalOffres}">0</span>)
+            </a>
+            <a
+              th:href="@{/offres(statut='BROUILLON')}"
+              th:class="${statutActif == 'BROUILLON'} ? 'primary-button' : 'secondary-button'"
+            >
+              Brouillons (<span
+                data-compteur="BROUILLON"
+                th:text="${compteurs['BROUILLON']}"
+                >0</span
+              >)
+            </a>
+            <a
+              th:href="@{/offres(statut='PUBLIEE')}"
+              th:class="${statutActif == 'PUBLIEE'} ? 'primary-button' : 'secondary-button'"
+            >
+              Publiées (<span
+                data-compteur="PUBLIEE"
+                th:text="${compteurs['PUBLIEE']}"
+                >0</span
+              >)
+            </a>
+            <a
+              th:href="@{/offres(statut='SUSPENDUE')}"
+              th:class="${statutActif == 'SUSPENDUE'} ? 'primary-button' : 'secondary-button'"
+            >
+              Suspendues (<span
+                data-compteur="SUSPENDUE"
+                th:text="${compteurs['SUSPENDUE']}"
+                >0</span
+              >)
+            </a>
+            <a
+              th:href="@{/offres(statut='CLOTUREE')}"
+              th:class="${statutActif == 'CLOTUREE'} ? 'primary-button' : 'secondary-button'"
+            >
+              Clôturées (<span
+                data-compteur="CLOTUREE"
+                th:text="${compteurs['CLOTUREE']}"
+                >0</span
+              >)
+            </a>
           </div>
 
           <!-- État vide -->
-          <div th:if="${offres == null || offres.isEmpty()}" class="empty">
-            <span class="empty-icon">
-              <svg
-                width="26"
-                height="26"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <rect x="3" y="7" width="18" height="13" rx="2" />
-                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
-              </svg>
-            </span>
-            <p class="empty-title">Aucune offre d'emploi</p>
-            <p class="empty-text">
-              Les offres apparaissent ici dès qu'une demande est validée par la
-              Direction Générale.
-            </p>
+          <div
+            th:if="${offres == null || offres.isEmpty()}"
+            class="card"
+          >
+            <div class="empty">
+              <span class="empty-icon">
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <rect x="3" y="7" width="18" height="13" rx="2" />
+                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                </svg>
+              </span>
+              <p class="empty-title">Aucune offre d'emploi</p>
+              <p class="empty-text">
+                Les offres apparaissent ici dès qu'une demande est validée par
+                la Direction Générale.
+              </p>
+            </div>
           </div>
 
-          <!-- Tableau -->
+          <!-- Cartes -->
           <div
             th:unless="${offres == null || offres.isEmpty()}"
-            class="table-wrap"
+            class="offres-grid"
           >
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Référence</th>
-                  <th>Offre</th>
-                  <th>Département</th>
-                  <th>Nb postes</th>
-                  <th>Statut</th>
-                  <th>Créée le</th>
-                  <th>Publiée le</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr th:each="offre : ${offres}" th:data-offre-id="${offre.id}">
-                  <td>
-                    <p class="cell-main" th:text="'OFF-' + ${offre.id}">
-                      OFF-001
-                    </p>
-                    <p
-                      class="cell-sub"
-                      th:text="'DEM-' + ${offre.ligneDemande.demandeRecrutement.id}"
-                    >
-                      DEM-001
-                    </p>
-                  </td>
-                  <td>
-                    <p class="cell-main" th:text="${offre.titreOffre}">
-                      Développeur
-                    </p>
-                    <p
-                      class="cell-sub"
-                      th:text="${offre.ligneDemande.typeBesoin}"
-                    >
-                      REMPLACEMENT
-                    </p>
-                  </td>
-                  <td
-                    th:text="${offre.ligneDemande.demandeRecrutement.departement.nom}"
+            <article
+              th:each="offre : ${offres}"
+              class="offre-card"
+              th:data-offre-id="${offre.id}"
+            >
+              <div class="offre-top">
+                <span class="offre-icon">
+                  <svg
+                    width="19"
+                    height="19"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
                   >
-                    Informatique
-                  </td>
-                  <td th:text="${offre.ligneDemande.nombrePostes}">1</td>
-                  <td>
-                    <span
-                      class="badge"
-                      data-role="badge"
-                      th:classappend="${offre.statutOffre.code == 'PUBLIEE'} ? 'badge-success' : (${offre.statutOffre.code == 'BROUILLON'} ? 'badge-warning' : 'badge-neutral')"
-                    >
-                      <span class="dot"></span>
-                      <span
-                        data-role="statut-libelle"
-                        th:text="${offre.statutOffre.libelle}"
-                        >Brouillon</span
-                      >
-                    </span>
-                  </td>
-                  <td
+                    <rect x="3" y="7" width="18" height="13" rx="2" />
+                    <path
+                      d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18M10 12v2h4v-2"
+                    />
+                  </svg>
+                </span>
+                <span
+                  data-role="badge"
+                  th:class="'offre-pill pill-' + ${offre.statutOffre.code}"
+                >
+                  <span
+                    data-role="statut-libelle"
+                    th:text="${offre.statutOffre.libelle}"
+                    >Brouillon</span
+                  >
+                </span>
+              </div>
+
+              <div class="offre-body">
+                <p class="offre-title" th:text="${offre.titreOffre}">
+                  Développeur
+                </p>
+                <p
+                  class="offre-dept"
+                  th:text="${offre.ligneDemande.demandeRecrutement.departement.nom}"
+                >
+                  Informatique
+                </p>
+                <p
+                  class="offre-desc"
+                  th:text="${offre.descriptionOffre} ?: 'Aucune description.'"
+                >
+                  Description de l'offre.
+                </p>
+              </div>
+
+              <ul class="offre-meta">
+                <li>
+                  <span th:text="'OFF-' + ${offre.id}">OFF-001</span>
+                  ·
+                  <span
+                    th:text="'DEM-' + ${offre.ligneDemande.demandeRecrutement.id}"
+                    >DEM-001</span
+                  >
+                </li>
+                <li>
+                  <span
+                    th:text="${offre.ligneDemande.nombrePostes} + (${offre.ligneDemande.nombrePostes} > 1 ? ' postes' : ' poste')"
+                    >1 poste</span
+                  >
+                  ·
+                  <span th:text="${offre.ligneDemande.typeBesoin}"
+                    >REMPLACEMENT</span
+                  >
+                </li>
+                <li>
+                  Créée le
+                  <span
                     th:text="${#temporals.format(offre.dateCreation, 'dd/MM/yyyy HH:mm')}"
+                    >01/10/2026 09:00</span
                   >
-                    01/10/2026 09:00
-                  </td>
-                  <td
+                </li>
+                <li>
+                  Publiée le
+                  <span
                     data-role="date-publication"
                     th:text="${offre.datePublication != null} ? ${#temporals.format(offre.datePublication, 'dd/MM/yyyy HH:mm')} : '—'"
+                    >—</span
                   >
-                    —
-                  </td>
-                  <td>
-                    <div class="row-actions">
-                      <button
-                        type="button"
-                        class="secondary-button js-statut-btn"
-                        title="Changer le statut"
-                        th:data-offre-id="${offre.id}"
-                        th:data-titre="${offre.titreOffre}"
-                        th:data-statut="${offre.statutOffre.code}"
-                        th:data-transitions="${#strings.listJoin(transitions.get(offre.statutOffre.code), ',')}"
-                        th:hidden="${transitions.get(offre.statutOffre.code).isEmpty()}"
-                      >
-                        Changer le statut
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                </li>
+              </ul>
+
+              <div class="offre-footer">
+                <a
+                  class="offre-link js-candidatures-link"
+                  th:href="@{/offres/{id}/candidatures(id=${offre.id})}"
+                  th:hidden="${offre.statutOffre.code == 'BROUILLON'}"
+                  >Candidatures →</a
+                >
+                <button
+                  type="button"
+                  class="secondary-button js-statut-btn"
+                  title="Changer le statut"
+                  th:data-offre-id="${offre.id}"
+                  th:data-titre="${offre.titreOffre}"
+                  th:data-statut="${offre.statutOffre.code}"
+                  th:data-transitions="${#strings.listJoin(transitions.get(offre.statutOffre.code), ',')}"
+                  th:hidden="${transitions.get(offre.statutOffre.code).isEmpty()}"
+                >
+                  Changer le statut
+                </button>
+              </div>
+            </article>
           </div>
         </div>
 
-        <!-- Modal de changement de statut -->
-        <dialog id="statutModal" class="statut-dialog">
-          <form
-            id="statutForm"
-            method="dialog"
-            th:data-url-base="@{/offres}"
-          >
-            <h2>Changer le statut</h2>
-            <p id="statutOffreTitre" class="cell-main"></p>
-            <p class="cell-sub">
-              Statut actuel : <strong id="statutCourant"></strong>
-            </p>
-
-            <label for="statutSelect">Nouveau statut</label>
-            <select id="statutSelect" name="statut"></select>
-
-            <p id="statutNote" class="cell-sub" hidden>
-              Une offre clôturée ne peut plus changer de statut.
-            </p>
-            <p id="statutErreur" class="statut-error" role="alert"></p>
-
-            <div class="modal-actions">
-              <button
-                type="button"
-                class="secondary-button"
-                data-close-statut
-              >
-                Annuler
-              </button>
-              <button
-                type="submit"
-                id="statutConfirmer"
-                class="primary-button"
-              >
-                Confirmer
-              </button>
+        <!-- Modal de changement de statut (même design que le modal de refus) -->
+        <div
+          id="statutModal"
+          class="modal-backdrop hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="statut-title"
+        >
+          <div class="modal">
+            <div class="modal-header">
+              <h2 id="statut-title" class="modal-title">
+                Changer le statut de l'offre
+              </h2>
+              <p class="modal-sub">
+                <strong id="statutOffreTitre"></strong>
+                — statut actuel : <span id="statutCourant"></span>
+              </p>
             </div>
-          </form>
-        </dialog>
+
+            <form
+              id="statutForm"
+              class="modal-body"
+              method="post"
+              th:data-url-base="@{/offres}"
+            >
+              <div>
+                <label class="label" for="statutSelect"
+                  >Nouveau statut <span class="required">*</span></label
+                >
+                <select id="statutSelect" name="statut" class="field"></select>
+              </div>
+
+              <p id="statutNote" class="modal-sub" hidden>
+                Une offre clôturée ne peut plus changer de statut.
+              </p>
+              <p id="statutErreur" class="statut-error" role="alert"></p>
+
+              <div class="modal-actions">
+                <button
+                  type="button"
+                  class="secondary-button"
+                  data-close-statut
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  id="statutConfirmer"
+                  class="primary-button"
+                >
+                  Confirmer
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </main>
     <script th:src="@{/js/offres-statut.js}"></script>

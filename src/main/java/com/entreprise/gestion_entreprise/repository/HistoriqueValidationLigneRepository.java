@@ -14,4 +14,7 @@ public interface HistoriqueValidationLigneRepository extends JpaRepository<Histo
     List<HistoriqueValidationLigne> findByLigneDemandeIdAndEtape(Integer ligneId, String etape);
 
     List<HistoriqueValidationLigne> findByValideurId(Integer valideurId);
+
+    /** Historique de plusieurs lignes en une requête, dans l'ordre d'enregistrement. */
+    List<HistoriqueValidationLigne> findByLigneDemandeIdInOrderByIdAsc(List<Integer> ids);
 }

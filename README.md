@@ -44,10 +44,9 @@ sudo -u postgres dropdb --if-exists --force gestion_rh
 
 sudo -u postgres createdb -O rh_user gestion_rh
 
-PGPASSWORD='Rh2026!' psql -h localhost -U rh_user -d gestion_rh -v ON_ERROR_STOP=1 -f bloc1.sql
-
-PGPASSWORD='Rh2026!' psql -h localhost -U rh_user -d gestion_rh -v ON_ERROR_STOP=1 -f donnebloc1.sql
-
+PGPASSWORD='Rh2026!' psql -h localhost -U rh_user -d gestion_rh \
+  -v ON_ERROR_STOP=1 -1 \
+  -f bloc1.sql -f bloc2.sql -f donnebloc1.sql
 ```
 
 ### vider les tables :
