@@ -21,6 +21,10 @@ public class Candidat {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    /** Hash BCrypt du mot de passe (jamais le mot de passe en clair). */
+    @Column(name = "mot_de_passe", nullable = false, length = 100)
+    private String motDePasse;
+
     @Column(length = 30)
     private String telephone;
 
@@ -54,6 +58,10 @@ public class Candidat {
         return email;
     }
 
+    public String getMotDePasse() {
+        return motDePasse;
+    }
+
     public String getTelephone() {
         return telephone;
     }
@@ -80,6 +88,10 @@ public class Candidat {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setMotDePasse(String motDePasse) {
+        this.motDePasse = motDePasse;
     }
 
     public void setTelephone(String telephone) {

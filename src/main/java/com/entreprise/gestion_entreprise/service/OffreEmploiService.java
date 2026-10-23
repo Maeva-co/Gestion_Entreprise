@@ -1,8 +1,10 @@
 package com.entreprise.gestion_entreprise.service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -166,6 +168,29 @@ public class OffreEmploiService {
             }
             offreRepository.delete(offre);
         });
+    }
+
+    @Transactional(readOnly = true)
+    public List<OffreEmploi> listerPubliees(String recherche) {
+        String terme = recherche == null ? "" : recherche.trim().toLowerCase(Locale.ROOT);
+        return offreRepository.findByStatutAvecDetails(CODE_OFFRE_PUBLIEE).stream()
+                .filter(o -> terme.isEmpty()
+                        || contient(o.getTitreOffre(), terme)
+                        || contient(o.getLigneDemande().getDemandeRecrutement().getDepartement().getNom(), terme))
+                .sorted(Comparator.comparing(OffreEmploi::getDatePublication,
+                        Comparator.nullsLast(Comparator.reverseOrder())))
+                .toList();
+    }
+
+     @Transactional(readOnly = true)
+    public OffreEmploi trouverPubliee(Integer id) {
+        return offreRepository.findByIdAvecDetails(id)
+                .filter(o -> CODE_OFFRE_PUBLIEE.equals(o.getStatutOffre().getCode()))
+                .orElseThrow(() -> new RegleGestionException("Cette offre n'est plus disponible."));
+    }
+ 
+    private boolean contient(String texte, String terme) {
+        return texte != null && texte.toLowerCase(Locale.ROOT).contains(terme);
     }
 
 }

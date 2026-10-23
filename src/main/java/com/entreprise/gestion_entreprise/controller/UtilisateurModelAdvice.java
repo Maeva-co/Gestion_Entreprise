@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.entreprise.gestion_entreprise.dto.LigneSuivi;
 import com.entreprise.gestion_entreprise.dto.StatutSuivi;
 import com.entreprise.gestion_entreprise.model.Utilisateur;
+import com.entreprise.gestion_entreprise.portail.CandidatSession;
 import com.entreprise.gestion_entreprise.repository.UtilisateurRepository;
 import com.entreprise.gestion_entreprise.service.ValidationLigneService;
 import org.springframework.ui.Model;
@@ -30,7 +31,7 @@ public class UtilisateurModelAdvice {
     // private final DemandeRecrutementRepository demandeRepository;
 
     public UtilisateurModelAdvice(UtilisateurRepository utilisateurRepository,
-            ValidationLigneService validationService) {
+            ValidationLigneService validationService, CandidatSession candidatSession) {
         this.utilisateurRepository = utilisateurRepository;
         this.validationService = validationService;
     }
@@ -61,11 +62,15 @@ public class UtilisateurModelAdvice {
         return validationService.compterRefuseesRH();
     }
 
-        @ModelAttribute
-    public void compteursMenu(Model model) {
+    @ModelAttribute
+    public void compteursMenu(Model model, Principal principal) {
+        if (principal == null) {
+            return;
+        }
+
         Map<String, Long> enAttente = new HashMap<>();
         Map<String, Long> refusees = new HashMap<>();
- 
+
         for (LigneSuivi ligne : validationService.getSuiviLignes()) {
             StatutSuivi statut = ligne.getStatut();
             if (statut.getType() == StatutSuivi.Type.A_VALIDER) {

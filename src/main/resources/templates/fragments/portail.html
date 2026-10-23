@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <!--
+      Fragment : en-tête du portail candidats.
+      Appel : <div th:replace="~{fragments/portail :: entete}"></div>
+      Variable du modèle : candidatConnecte (fournie par PortailModelAdvice, nulle si anonyme).
+    -->
+    <header class="pt-header" th:fragment="entete">
+      <div class="pt-header-in">
+        <a class="pt-brand brand" th:href="@{/candidate-portal}" style="padding: 0">
+          <span class="logo-mark"></span>
+          <span class="logo-text">Talent<span class="logo-accent">ly</span></span>
+        </a>
+
+        <div class="pt-header-actions">
+          <th:block th:if="${candidatConnecte != null}">
+            <span class="pt-hello"
+              >Bonjour, <strong th:text="${candidatConnecte.prenom}">Jean</strong></span
+            >
+            <form
+              class="pt-inline-form"
+              th:action="@{/candidate-portal/deconnexion}"
+              method="post"
+            >
+              <button type="submit" class="secondary-button">Se déconnecter</button>
+            </form>
+          </th:block>
+
+          <th:block th:unless="${candidatConnecte != null}">
+            <a class="link-button" th:href="@{/candidate-portal/connexion}">Se connecter</a>
+            <a class="primary-button" th:href="@{/candidate-portal/inscription}"
+              >Créer un compte</a
+            >
+          </th:block>
+
+          <a class="link-button" th:href="@{/demandes-recrutement/validation/rh/liste}"
+            >Espace RH</a
+          >
+        </div>
+      </div>
+    </header>
+  </body>
+</html>

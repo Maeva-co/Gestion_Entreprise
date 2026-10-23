@@ -73,6 +73,7 @@ CREATE TABLE candidat (
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
+    mot_de_passe VARCHAR(100) NOT NULL,      -- hash BCrypt (60 caractères), jamais le mot de passe en clair
     telephone VARCHAR(30),
     chemin_cv VARCHAR(255),                  -- fichier PDF/Docx en pièce justificative
     date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

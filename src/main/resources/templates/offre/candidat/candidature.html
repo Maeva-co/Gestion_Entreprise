@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="'Postuler — ' + ${offre.titreOffre}">Postuler — Talently</title>
+    <link rel="stylesheet" th:href="@{/css/talently.css}" />
+    <link rel="stylesheet" th:href="@{/css/portail.css}" />
+  </head>
+  <body class="pt-body">
+    <div th:replace="~{fragments/portail :: entete}"></div>
+
+    <main class="pt-auth pt-auth-wide">
+      <div class="pt-auth-card">
+        <h1 class="pt-auth-title">Votre candidature</h1>
+        <p class="pt-auth-sub">
+          Quelques informations nous aident à étudier votre profil. Vous postulez
+          avec le compte
+          <strong th:text="${candidatConnecte.email}">jean@exemple.com</strong>.
+        </p>
+
+        <!-- Rappel de l'offre -->
+        <div class="pt-summary">
+          <strong th:text="${offre.titreOffre}">Ingénieur Data</strong>
+          <span th:text="${offre.ligneDemande.demandeRecrutement.departement.nom}"
+            >Data &amp; Tech</span
+          >
+        </div>
+
+        <div
+          class="alert error"
+          th:if="${erreur != null}"
+          th:text="${erreur}"
+          role="alert"
+        ></div>
+
+        <form
+          class="pt-form"
+          method="post"
+          th:action="@{/candidate-portal/offres/{id}/postuler(id=${offre.id})}"
+        >
+          <div>
+            <label class="label" for="anneeExperience"
+              >Années d'expérience <span class="required">*</span></label
+            >
+            <input
+              id="anneeExperience"
+              name="anneeExperience"
+              class="field"
+              type="number"
+              min="0"
+              max="60"
+              step="1"
+              required
+              th:value="${anneeExperience}"
+            />
+          </div>
+
+          <div>
+            <label class="label" for="dernierDiplome"
+              >Dernier diplôme obtenu <span class="required">*</span></label
+            >
+            <select
+              id="dernierDiplome"
+              name="dernierDiplome"
+              class="field"
+              required
+            >
+              <option value="" disabled th:selected="${dernierDiplome == null}">
+                Choisir un niveau
+              </option>
+              <option
+                th:each="d : ${diplomes}"
+                th:value="${d}"
+                th:text="${d}"
+                th:selected="${d == dernierDiplome}"
+              >
+                Bac+3
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="label" for="pretentionSalariale"
+              >Prétention salariale mensuelle</label
+            >
+            <input
+              id="pretentionSalariale"
+              name="pretentionSalariale"
+              class="field"
+              type="number"
+              min="0"
+              step="any"
+              th:value="${pretentionSalariale}"
+            />
+            <p class="pt-help">Facultatif.</p>
+          </div>
+
+          <div class="pt-form-actions">
+            <a
+              class="secondary-button"
+              th:href="@{/candidate-portal/offres/{id}(id=${offre.id})}"
+              >Annuler</a
+            >
+            <button type="submit" class="primary-button">
+              Envoyer ma candidature
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>

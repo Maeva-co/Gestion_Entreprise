@@ -1,0 +1,383 @@
+/* Portail candidats : complète talently.css (boutons, champs, alertes viennent de talently.css).
+   Fichier : src/main/resources/static/css/portail.css, à charger après talently.css. */
+
+.pt-body {
+  margin: 0;
+  background: #fff;
+  color: #0f172a;
+}
+
+/* ---------- En-tête ---------- */
+.pt-header {
+  padding: 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid #f1f5f9;
+}
+.pt-header-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 1152px;
+  margin: 0 auto;
+}
+.pt-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.pt-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.pt-hello {
+  font-size: 12px;
+  color: #475569;
+}
+.pt-inline-form {
+  margin: 0;
+}
+
+/* ---------- Bandeau de recherche ---------- */
+.pt-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 20px;
+  background: #171c49;
+}
+.pt-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.7;
+  background-image: radial-gradient(circle at 72% 45%, rgba(107, 97, 255, 0.55), transparent 28%),
+    radial-gradient(circle at 22% 84%, rgba(39, 195, 179, 0.18), transparent 20%);
+}
+.pt-hero-in {
+  position: relative;
+  max-width: 1152px;
+  margin: 0 auto;
+}
+.pt-hero .pt-eyebrow {
+  color: #aaa6ff;
+}
+.pt-hero h1 {
+  max-width: 36rem;
+  margin: 12px 0 0;
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.055em;
+  color: #fff;
+}
+.pt-hero-text {
+  max-width: 32rem;
+  margin: 16px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(224, 231, 255, 0.78);
+}
+.pt-search {
+  display: flex;
+  align-items: center;
+  max-width: 36rem;
+  margin-top: 28px;
+  padding: 6px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+.pt-search input {
+  flex: 1;
+  height: 40px;
+  padding: 0 12px;
+  border: 0;
+  outline: 0;
+  font-size: 13px;
+  color: #334155;
+  background: transparent;
+}
+
+/* ---------- Contenu ---------- */
+.pt-main {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+.pt-eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5b55ed;
+}
+.pt-h2 {
+  margin: 4px 0 0;
+  font-size: 25px;
+  letter-spacing: -0.045em;
+  color: #0f172a;
+}
+.pt-count {
+  color: #94a3b8;
+}
+.pt-back {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #5b55ed;
+  text-decoration: none;
+}
+.pt-block {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------- Cartes d'offres ---------- */
+.pt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.pt-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pt-card:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 12px 30px rgba(79, 70, 229, 0.1);
+}
+.pt-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.pt-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #eef2ff;
+  color: #5b55ed;
+}
+.pt-date {
+  font-size: 10px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+.pt-card-title {
+  margin: 20px 0 0;
+  font-size: 16px;
+  letter-spacing: -0.025em;
+}
+.pt-card-title a {
+  color: #1e293b;
+  text-decoration: none;
+}
+.pt-dept {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5b55ed;
+}
+.pt-clamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 12px 0 16px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #64748b;
+}
+.pt-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+}
+.pt-meta {
+  font-size: 10px;
+  color: #94a3b8;
+}
+.pt-more {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #eeedff;
+  font-size: 10px;
+  font-weight: 700;
+  color: #514bd7;
+  text-decoration: none;
+}
+
+/* ---------- Détail d'une offre ---------- */
+.pt-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+.pt-panel {
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+.pt-title {
+  margin: 20px 0 0;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.045em;
+}
+.pt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.pt-chips li {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+.pt-desc {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #475569;
+  white-space: pre-line;
+}
+.pt-apply h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.pt-hint {
+  margin: 12px 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #64748b;
+}
+.pt-hint a,
+.pt-auth-foot a {
+  font-weight: 700;
+  color: #5b55ed;
+}
+
+/* ---------- Inscription, connexion, candidature ---------- */
+.pt-auth {
+  max-width: 460px;
+  margin: 48px auto;
+  padding: 0 20px;
+}
+.pt-auth-wide {
+  max-width: 560px;
+}
+.pt-auth-card {
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+}
+.pt-auth-title {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+.pt-auth-sub {
+  margin: 8px 0 20px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #64748b;
+}
+.pt-auth-foot {
+  margin: 20px 0 0;
+  font-size: 12px;
+  text-align: center;
+  color: #64748b;
+}
+.pt-form > div + div,
+.pt-form > .pt-row + div {
+  margin-top: 14px;
+}
+.pt-form .field {
+  width: 100%;
+  box-sizing: border-box;
+}
+.pt-form .primary-button {
+  margin-top: 20px;
+}
+.pt-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pt-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+.pt-form-actions .primary-button {
+  margin-top: 0;
+}
+.pt-summary {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f3f2ff;
+}
+.pt-summary strong {
+  display: block;
+  font-size: 14px;
+  color: #1e293b;
+}
+.pt-summary span {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5b55ed;
+}
+.pt-help {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+@media (max-width: 860px) {
+  .pt-detail {
+    grid-template-columns: 1fr;
+  }
+  .pt-hero h1 {
+    font-size: 32px;
+  }
+}
+@media (max-width: 520px) {
+  .pt-row {
+    grid-template-columns: 1fr;
+  }
+}
